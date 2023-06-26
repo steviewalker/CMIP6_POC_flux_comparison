@@ -1,7 +1,5 @@
 # CMIP6_POC_flux_comparison
-Multimodel comparison of POC flux changes across multiple export depth horizons in CMIP6 ESMs
-Code written by Stevie Walker
-2020-2023
+Multimodel comparison of POC flux changes across multiple export depth horizons in CMIP6 ESMs, code written by Stevie Walker, 2020-2023
 
 This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files. paper_figs.R: plots all figures in the manuscript.
 

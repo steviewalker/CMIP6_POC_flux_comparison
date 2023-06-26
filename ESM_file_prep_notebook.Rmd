@@ -1,0 +1,401 @@
+---
+title: "File Download and Prep"
+author: Stevie Walker
+output: html_notebook
+---
+
+1. Download and load libraries
+```{r}
+setwd("~/senior_thesis/")
+source('libraries.R')
+
+```
+
+2. Using epwshiftr to specify which files to download
+```{r}
+# NOTE: epwshiftr package may not work with older versions of R (i.e. 3.6.3)
+
+# fill out this format with the variables you need, create the index, then download from index in the next step
+
+# set directory to store files
+options(epwshiftr.dir = tempdir())
+options(epwshiftr.verbose = TRUE)
+
+# get CMIP6 data nodes
+(nodes <- get_data_node())
+
+# create a CMIP6 output file index
+idx <- init_cmip6_index(
+  # only consider ScenarioMIP activity
+  activity = c("ScenarioMIP", "CMIP"),
+  
+  # specify variables
+  variable = c("epc100"),
+  
+  # specify report frequency
+  frequency = c("mon"),
+  
+  # specify experiment name
+  experiment = c("ssp585", "historical"),
+  
+  # specify GCM names
+  source = c("CESM2"),
+  
+  # "UKESM1-0-LL", "CMCC-ESM2", "EC-Earth3-CC","GFDL-ESM4","MPI-ESM1-2-HR", "IPSL-CM6A-LR"
+  # specify variant,
+  variant = c("r1i1p1f1"),
+  
+  #"r1i1p1f1","r10i1p1f1","r1i1p1f2"
+  
+  # save to data directory
+  save = FALSE
+)
+
+#subset index data frame to only keep the wget url
+df <- idx[,21]
+#saving CMIP6 data list (rename this every time to the save name of your choice)
+write_csv(df,"~/senior_thesis/download_indexes/CM4_expc.csv")
+
+```
+
+
+3. Download data files
+```{r}
+
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('get_nc_thredds.R')
+
+#creating save path
+save.path <- "~/senior_thesis/CM4_data"
+dir.create(save.path)
+
+#first attempt (got CESM2, CESM2-WACCM, MPI-ESM1-2-HR)
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/cmip6_index.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL download (only MLD)
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/cmip6_index_gfdl.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL download - manually pasted file urls from ESGF search query, failed to connect to node and could not download
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/gfdl_urls.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#IPSL download - failed because it could not connect to vesg.ipsl.upmc.fr data node
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/cmip6_index_ipsl.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#UKESM download - manually pasted file urls from ESGF search query
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/ukesm_urls.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#missing files download
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/cmip6_index_gfdl_epc100.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL mlotst gr
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/gfdl_mlotst.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#Download EC Earth,CMCC
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/cmip6_index2.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+
+#Download CMCC pp data
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/CMCC_pp.csv")
+get_nc_thredds(cmip6.index,save.path)
+
+#download historical data
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#download GFDL historical data
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/GFDL_historical.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#download UKESM historical data
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_UKESM.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#download MPI historical mlotst
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_MPI.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#download EC-Earth historical mlotst and expc
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_EC-Earth.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#historical UKESM expc
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_UKESM_expc.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#CESM historical pp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_CESM_pp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#MPI historical pp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_MPI_pp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#UKESM historical pp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_UKESM_pp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#CMCC historical pp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/historical_CMCC_pp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#EC-Earth ssp585 pp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/ssp585_EC-Earth_pp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#CESM intpp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/CESM_intpp.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#CESM salinity + temp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/CESM_so_thetao.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#CMCC,EC-Earth,GFDL, MPI salinity + temp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/so_thetao.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#UKESM salinity + temp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/UKESM_so_thetao.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL gr sal and temp
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/GFDL_so_thetao.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#MPI historical expc
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/MPI_expc.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#MPI future epc100
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/MPI_epc100.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL gn data
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/GFDL_gn_mlotst.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+#GFDL-CM4 expc
+cmip6.index <- read_csv("~/senior_thesis/download_indexes/CM4_expc.csv")
+get_nc_thredds(cmip6.index, save.path)
+
+```
+
+
+4. Combine multipart files into a single nc file
+```{r}
+#after downloading all the files, move them into their corresponding model folder (ex. CESM_data)
+#if you need to recombine any files, make sure you delete the old nc file in the combined files folder
+#switch between gr or gn in the function depending on which grid the model output is on
+
+## CESM Combine ----------
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('combine_ncfiles.R')
+
+# list of all files with either native grid or regular grid pattern (switch between depending on the model)
+model.files <- list.files("~/senior_thesis/CESM_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/CESM_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun.
+  grep("thetao_Omon_CESM2_historical_r10i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/CESM_data/"
+save.path <- "~/senior_thesis/combined_CESM_files/"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+## CM4 Combine ---------
+
+model.files <- list.files("~/senior_thesis/CM4_data/", pattern = "*_gr_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/CM4_data/", pattern = "*_gr_*.*nc$") %>% 
+  str_split(.,"_gr") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("mlotst_Omon_GFDL-CM4_ssp585_r1i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/CM4_data/"
+save.path <- "~/senior_thesis/combined_CM4_files"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+## GFDL Combine -----------
+model.files <- list.files("~/senior_thesis/GFDL_data/", pattern = "*_gr_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/GFDL_data/", pattern = "*_gr_*.*nc$") %>% 
+  str_split(.,"_gr") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("pp_Oyr_GFDL-ESM4_historical_r1i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/GFDL_data/"
+save.path <- "~/senior_thesis/combined_GFDL_files"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+## UKESM Combine ----------
+
+# list of all files with gr: "data reported on a model's regular grid"
+model.files <- list.files("~/senior_thesis/UKESM_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/UKESM_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("epc100_Omon_UKESM1-0-LL_ssp585_r1i1p1f2",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/UKESM_data/"
+save.path <- "~/senior_thesis/combined_UKESM_files"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+##EC Earth Combine --------
+
+# list of all files with gr: "data reported on a model's regular grid"
+model.files <- list.files("~/senior_thesis/EC_Earth_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/EC_Earth_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("pp_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/EC_Earth_data/"
+save.path <- "~/senior_thesis/combined_EC-Earth_files"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+##MPI Combine --------
+
+model.files <- list.files("~/senior_thesis/MPI_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/MPI_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("expc_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/MPI_data/"
+save.path <- "~/senior_thesis/combined_MPI_files/"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+##UKESM Combine -----------
+
+model.files <- list.files("~/senior_thesis/UKESM_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/UKESM_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("pp_Omon_UKESM1-0-LL_ssp585_r1i1p1f2",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/UKESM_data/"
+save.path <- "~/senior_thesis/combined_UKESM_files"
+dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+## CMCC Combine -------------
+# list of all files with gr: "data reported on a model's regular grid"
+model.files <- list.files("~/senior_thesis/CMCC_data/", pattern = "*_gn_*.*nc$") 
+
+# list of unique models and scenarios
+model.scenarios <- list.files("~/senior_thesis/CMCC_data/", pattern = "*_gn_*.*nc$") %>% 
+  str_split(.,"_gn") %>% 
+  unlist %>% 
+  #switch between variables and model reps here. You can do this manually here, then rerun. ( Note on 2/8/21)
+  grep("pp_Omon_CMCC-ESM2_historical_r1i1p1f1",., value = TRUE) %>% 
+  unique()
+
+data.path <- "~/senior_thesis/CMCC_data/"
+save.path <- "~/senior_thesis/combined_CMCC_files"
+#dir.create(save.path)
+
+lapply(model.scenarios,combine_files, model.files, save.path, data.path)
+
+
+```
+
+
+5. Get metadata for combined files
+```{r}
+setwd("~/senior_thesis/")
+source('grab_metadata.R')
+
+#CESM
+grab_metadata(data.path = "~/senior_thesis/combined_CESM_files",
+              model.files = list.files("~/senior_thesis/combined_CESM_files/"))
+
+grab_metadata(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+              model.files = list.files("~/spatial_analysis/regridded_nc_files/CESM_rg/"))
+
+grab_metadata(data.path = "~/senior_thesis/CESM_data",
+              model.files = list.files("~/senior_thesis/CESM_data/"))
+
+#CM4 
+grab_metadata(data.path = "~/senior_thesis/combined_CM4_files",
+              model.files = list.files("~/senior_thesis/combined_CM4_files/"))
+
+
+#GFDL
+grab_metadata(data.path = "~/senior_thesis/combined_GFDL_files",
+              model.files = list.files("~/senior_thesis/combined_GFDL_files/"))
+
+#IPSL
+grab_metadata(data.path = "~/senior_thesis/combined_IPSL_files",
+              model.files = list.files("~/senior_thesis/combined_IPSL_files/"))
+
+#MPI
+grab_metadata(data.path = "~/senior_thesis/combined_MPI_files",
+              model.files = list.files("~/senior_thesis/combined_MPI_files/"))
+
+#CMCC
+grab_metadata(data.path = "~/senior_thesis/combined_CMCC_files",
+              model.files = list.files("~/senior_thesis/combined_CMCC_files/"))
+
+#EC-Earth
+grab_metadata(data.path = "~/senior_thesis/combined_EC-Earth_files",
+              model.files = list.files("~/senior_thesis/combined_EC-Earth_files/"))
+
+#UKESM
+grab_metadata(data.path = "~/senior_thesis/combined_UKESM_files",
+              model.files = list.files("~/senior_thesis/combined_UKESM_files/"))
+
+#IPSL
+grab_metadata(data.path = "~/senior_thesis/combined_IPSL_files",
+              model.files = list.files("~/senior_thesis/combined_IPSL_files/"))
+
+
+```

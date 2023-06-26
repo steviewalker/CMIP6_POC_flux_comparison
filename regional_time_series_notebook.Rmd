@@ -1,0 +1,480 @@
+---
+title: "Regionally Integrated Time Series Analysis"
+author: Stevie Walker
+output: html_notebook
+---
+
+REGIONAL TIME SERIES ANALYSIS
+
+1. Calculate MLDmax and EZ depth arrays from regridded data for making time series
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code")
+source('calc_rg_time_series_MLDmax.R')
+source('calc_rg_time_series_EZ_depth.R')
+
+models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM")
+
+lapply(models, rg_time_series_MLDmax)
+
+models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI")
+
+lapply(models, rg_time_series_ez_depth, UKESM.file = NA)
+
+#must run in chunks since UKESM NPP file is too big to combine
+rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 1)
+rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 2)
+rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 3)
+rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 4)
+rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 5)
+
+```
+
+
+2. Calculate area of each region and historical and long-term fluxes
+The area sums come from GFDL regridded data, calc_GFDL_region_area.R
+```{r}
+setwd("~/regional_time_series_analysis/code")
+source('calc_GFDL_region_area.R')
+source('calc_regional_time_series_averages.R')
+
+calc_region_sum(DH = "POC_100")
+calc_region_sum(DH = "POC_1000")
+calc_region_sum(DH = "POC_MLDmax")
+calc_region_sum(DH = "POC_PCD")
+calc_region_sum(DH = "POC_EZ")
+calc_region_sum(DH = "NPP")
+
+```
+Per area flux = Pg C/m2/yr
+Total flux = Pg C/yr
+
+2. Calculate regional POC flux time series at 100m
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('calc_regional_time_series_epc100.R')
+source('calc_regional_time_series_expc.R')
+
+models = c("CESM","CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM")
+regions = c("SO_50", "SO_60", "30_low_lats", "15_low_lats","EQ_Pacific", "low_lats_no_EQ_Pacific", "North_Atlantic")
+
+
+lapply(models, regional_ts_100, region = "SO_50")
+lapply(models, regional_ts_100, region = "SO_60")
+lapply(models, regional_ts_100, region = "30_low_lats")
+lapply(models, regional_ts_100, region = "15_low_lats")
+lapply(models, regional_ts_100, region = "North_Atlantic")
+lapply(models, regional_ts_100, region = "EQ_Pacific")
+lapply(models, regional_ts_100, region = "low_lats_no_EQ_Pacific")
+#run from calc_regional_time_series_expc function because this model doesn't archive at 100m
+lapply(regions, regional_ts_expc, model.name = "CM4", DH = 100)
+
+#code for if you need to run a model individually -------
+
+regional_ts_expc(model.name = "CM4", region = "SO_60", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "SO_50", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "North_Atlantic", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "30_low_lats", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "15_low_lats", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "EQ_Pacific", DH = 100)
+regional_ts_expc(model.name = "CM4", region = "low_lats_no_EQ_Pacific", DH = 100)
+
+regional_ts_100(model.name = "CESM", region = "SO_60")
+regional_ts_100(model.name = "CMCC", region = "SO_60")
+regional_ts_100(model.name = "EC-Earth", region = "SO_60")
+regional_ts_100(model.name = "GFDL", region = "SO_60")
+regional_ts_100(model.name = "IPSL", region = "SO_60")
+regional_ts_100(model.name = "MPI", region = "SO_60")
+regional_ts_100(model.name = "UKESM", region = "SO_60")
+
+regional_ts_100(model.name = "CESM", region = "SO_50")
+regional_ts_100(model.name = "CMCC", region = "SO_50")
+regional_ts_100(model.name = "EC-Earth", region = "SO_50")
+regional_ts_100(model.name = "GFDL", region = "SO_50")
+regional_ts_100(model.name = "IPSL", region = "SO_50")
+regional_ts_100(model.name = "MPI", region = "SO_50")
+regional_ts_100(model.name = "UKESM", region = "SO_50")
+
+regional_ts_100(model.name = "CESM", region = "North_Atlantic")
+regional_ts_100(model.name = "CMCC", region = "North_Atlantic")
+regional_ts_100(model.name = "EC-Earth", region = "North_Atlantic")
+regional_ts_100(model.name = "GFDL", region = "North_Atlantic")
+regional_ts_100(model.name = "IPSL", region = "North_Atlantic")
+regional_ts_100(model.name = "MPI", region = "North_Atlantic")
+regional_ts_100(model.name = "UKESM", region = "North_Atlantic")
+
+regional_ts_100(model.name = "CESM", region = "30_low_lats")
+regional_ts_100(model.name = "CMCC", region = "30_low_lats")
+regional_ts_100(model.name = "EC-Earth", region = "30_low_lats")
+regional_ts_100(model.name = "GFDL", region = "30_low_lats")
+regional_ts_100(model.name = "IPSL", region = "30_low_lats")
+regional_ts_100(model.name = "MPI", region = "30_low_lats")
+regional_ts_100(model.name = "UKESM", region = "30_low_lats")
+
+regional_ts_100(model.name = "CESM", region = "EQ_Pacific")
+regional_ts_100(model.name = "CMCC", region = "EQ_Pacific")
+regional_ts_100(model.name = "EC-Earth", region = "EQ_Pacific")
+regional_ts_100(model.name = "GFDL", region = "EQ_Pacific")
+regional_ts_100(model.name = "IPSL", region = "EQ_Pacific")
+regional_ts_100(model.name = "MPI", region = "EQ_Pacific")
+regional_ts_100(model.name = "UKESM", region = "EQ_Pacific")
+
+regional_ts_100(model.name = "CESM", region = "low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "CMCC", region = "low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "EC-Earth", region ="low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "GFDL", region = "low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "IPSL", region = "low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "MPI", region = "low_lats_no_EQ_Pacific")
+regional_ts_100(model.name = "UKESM", region = "low_lats_no_EQ_Pacific")
+
+
+```
+
+
+3. Calculate regional POC flux time series at MLDmax, PCD, and 1000m
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('calc_regional_time_series_expc.R')
+source('calc_regional_time_series_expc_UKESM.R')
+models = c("CESM","CM4","CMCC", "EC-Earth", "GFDL", "IPSL", "MPI")
+files = 1:6
+
+# Southern Ocean South of 60 degrees ----------
+
+lapply(models,regional_ts_expc, region = "SO_60", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "SO_60", DH = 1000)
+lapply(models,regional_ts_expc, region = "SO_60", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "SO_60", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "SO_60", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "SO_60", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "SO_60")
+
+
+# Southern Ocean South of 50 Degrees ---------------
+
+lapply(models,regional_ts_expc, region = "SO_50", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "SO_50", DH = 1000)
+lapply(models,regional_ts_expc, region = "SO_50", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "SO_50", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "SO_50", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "SO_50", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "SO_50")
+
+
+# Low latitudes 30S-30N --------------
+
+#takes 50min per model
+
+lapply(models,regional_ts_expc, region = "30_low_lats", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "30_low_lats", DH = 1000)
+lapply(models,regional_ts_expc, region = "30_low_lats", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "30_low_lats", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "30_low_lats", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "30_low_lats", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "30_low_lats")
+
+
+# Low latitudes 15S-15N --------------
+
+#takes 20 minutes per model
+
+lapply(models,regional_ts_expc, region = "15_low_lats", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "15_low_lats", DH = 1000)
+lapply(models,regional_ts_expc, region = "15_low_lats", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "15_low_lats", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "15_low_lats", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "15_low_lats", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "15_low_lats")
+
+
+# Equatorial Pacific (15S to 15N, 160E to 75W)  --------------
+
+#takes 10 minutes per model
+
+lapply(models,regional_ts_expc, region = "EQ_Pacific", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "EQ_Pacific", DH = 1000)
+lapply(models,regional_ts_expc, region = "EQ_Pacific", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "EQ_Pacific", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "EQ_Pacific", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "EQ_Pacific", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "EQ_Pacific")
+
+# Low Latitudes without Equatorial Pacific (30S to 30N without 15S to 15N, 160E to 75W)  --------------
+
+#takes 50 minutes per model
+
+lapply(models,regional_ts_expc, region = "low_lats_no_EQ_Pacific", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "low_lats_no_EQ_Pacific", DH = 1000)
+lapply(models,regional_ts_expc, region = "low_lats_no_EQ_Pacific", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "low_lats_no_EQ_Pacific", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "low_lats_no_EQ_Pacific", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "low_lats_no_EQ_Pacific", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "low_lats_no_EQ_Pacific")
+
+# North Atlantic (40N to 65N, 70W to 0W)  --------------
+
+#takes 5 minute per model
+
+lapply(models,regional_ts_expc, region = "North_Atlantic", DH = "MLDmax")
+lapply(models,regional_ts_expc, region = "North_Atlantic", DH = 1000)
+lapply(models,regional_ts_expc, region = "North_Atlantic", DH = "PCD")
+
+#UKESM calculate
+lapply(files, regional_ts_expc_UKESM, region = "North_Atlantic", DH = "MLDmax")
+lapply(files, regional_ts_expc_UKESM, region = "North_Atlantic", DH = "PCD")
+lapply(files, regional_ts_expc_UKESM, region = "North_Atlantic", DH = 1000)
+#UKESM combine
+DHs = c("MLDmax", "PCD", 1000)
+lapply(DHs, combine_regional_ts_UKESM, region = "North_Atlantic")
+
+
+```
+
+
+4. Calculate POC flux at the EZ depth
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('calc_regional_time_series_expc_ez.R')
+source('calc_regional_time_series_expc_UKESM.R')
+models = c("CESM","CMCC", "EC-Earth", "GFDL", "IPSL", "MPI")
+files = 1:6
+
+regions = c("SO_50", "SO_60", "30_low_lats", "15_low_lats","EQ_Pacific", "low_lats_no_EQ_Pacific", "North_Atlantic")
+
+lapply(regions, regional_ts_expc_ez, model.name = "CM4")
+
+lapply(models,regional_ts_expc_ez, region = "SO_50")
+lapply(models,regional_ts_expc_ez, region = "SO_60")
+lapply(models,regional_ts_expc_ez, region = "30_low_lats")
+lapply(models,regional_ts_expc_ez, region = "15_low_lats")
+lapply(models,regional_ts_expc_ez, region = "EQ_Pacific")
+lapply(models,regional_ts_expc_ez, region = "low_lats_no_EQ_Pacific")
+lapply(models,regional_ts_expc_ez, region = "North_Atlantic")
+
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "SO_50")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "SO_60")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "30_low_lats")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "15_low_lats")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "EQ_Pacific")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "low_lats_no_EQ_Pacific")
+lapply(files, regional_ts_expc_UKESM, DH = "EZ_depth", region = "North_Atlantic")
+
+lapply(regions, combine_regional_ts_UKESM, DH = "EZ")
+
+```
+
+
+4. Calculate regionally integrated NPP 
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('calc_regional_time_series_npp.R')
+source('calc_regional_time_series_npp_UKESM.R')
+source('calc_regional_time_series_expc_UKESM.R') # for combining files
+files = 1:5
+
+#divide into lots of tmux sessions because this takes longer to run, CMCC takes even longer
+models = c("CESM","CM4","EC-Earth") 
+models =  c("GFDL","IPSL", "MPI")
+          
+lapply(models, regional_ts_npp, region = "SO_50")
+regional_ts_npp(model.name = "CMCC", region = "SO_50")
+
+lapply(models, regional_ts_npp, region = "SO_60")
+regional_ts_npp(model.name = "CMCC", region = "SO_60")
+
+lapply(models, regional_ts_npp, region = "30_low_lats")
+regional_ts_npp(model.name = "CMCC", region = "30_low_lats")
+
+lapply(models, regional_ts_npp, region = "15_low_lats")
+regional_ts_npp(model.name = "CMCC", region = "15_low_lats")
+
+lapply(models, regional_ts_npp, region = "North_Atlantic")
+
+lapply(models, regional_ts_npp, region = "EQ_Pacific")
+
+lapply(models, regional_ts_npp, region = "low_lats_no_EQ_Pacific")
+regional_ts_npp(model.name = "CMCC", region = "low_lats_no_EQ_Pacific")
+
+#UKESM
+lapply(files, regional_ts_npp_UKESM, region = "SO_50")
+lapply(files, regional_ts_npp_UKESM, region = "SO_60")
+lapply(files, regional_ts_npp_UKESM, region = "30_low_lats")
+lapply(files, regional_ts_npp_UKESM, region = "15_low_lats")
+lapply(files, regional_ts_npp_UKESM, region = "North_Atlantic")
+lapply(files, regional_ts_npp_UKESM, region = "EQ_Pacific")
+lapply(files, regional_ts_npp_UKESM, region = "low_lats_no_EQ_Pacific")
+
+#combine files
+regions = c("SO_50", "SO_60", "30_low_lats", "15_low_lats","EQ_Pacific", "low_lats_no_EQ_Pacific", "North_Atlantic")
+lapply(regions, combine_regional_ts_UKESM, DH = "NPP")
+
+combine_regional_ts_UKESM( DH = "NPP", region = "EQ_Pacific")
+
+
+```
+
+
+6. Calculate regionally integrated TE and e-ratio
+```{r}
+
+setwd("~/regional_time_series_analysis/code/")
+source('calc_regional_e_ratio_TE.R')
+
+regions = c("SO_50", "SO_60", "30_low_lats", "15_low_lats","EQ_Pacific", "low_lats_no_EQ_Pacific", "North_Atlantic")
+
+lapply(regions, regional_ts_TE, DH = "POC_100")
+lapply(regions, regional_ts_TE, DH = "POC_PCD")
+lapply(regions, regional_ts_TE, DH = "POC_EZ")
+lapply(regions, regional_ts_TE, DH = "POC_MLDmax")
+
+lapply(regions, regional_ts_e_ratio, DH = "POC_100")
+lapply(regions, regional_ts_e_ratio, DH = "POC_PCD")
+lapply(regions, regional_ts_e_ratio, DH = "POC_EZ")
+lapply(regions, regional_ts_e_ratio, DH = "POC_MLDmax")
+lapply(regions, regional_ts_e_ratio, DH = "POC_1000")
+
+```
+
+
+7. Plot regional time series - fluxes and NPP
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('plot_regional_time_series.R')
+
+plot_regional_time_series(region = "SO_60", DH = "POC_100")
+plot_regional_time_series(region = "SO_60", DH = "POC_MLDmax")
+plot_regional_time_series(region = "SO_60", DH = "POC_PCD")
+plot_regional_time_series(region = "SO_60", DH = "POC_1000")
+plot_regional_time_series(region = "SO_60", DH = "POC_EZ")
+plot_regional_time_series(region = "SO_60", DH = "NPP")
+
+plot_regional_time_series(region = "SO_50", DH = "POC_100")
+plot_regional_time_series(region = "SO_50", DH = "POC_MLDmax")
+plot_regional_time_series(region = "SO_50", DH = "POC_PCD")
+plot_regional_time_series(region = "SO_50", DH = "POC_1000")
+plot_regional_time_series(region = "SO_50", DH = "POC_EZ")
+plot_regional_time_series(region = "SO_50", DH = "NPP")
+
+plot_regional_time_series(region = "30_low_lats", DH = "POC_100")
+plot_regional_time_series(region = "30_low_lats", DH = "POC_MLDmax")
+plot_regional_time_series(region = "30_low_lats", DH = "POC_PCD")
+plot_regional_time_series(region = "30_low_lats", DH = "POC_EZ")
+plot_regional_time_series(region = "30_low_lats", DH = "POC_1000")
+plot_regional_time_series(region = "30_low_lats", DH = "NPP")
+
+plot_regional_time_series(region = "15_low_lats", DH = "POC_100")
+plot_regional_time_series(region = "15_low_lats", DH = "POC_MLDmax")
+plot_regional_time_series(region = "15_low_lats", DH = "POC_PCD")
+plot_regional_time_series(region = "15_low_lats", DH = "POC_EZ")
+plot_regional_time_series(region = "15_low_lats", DH = "POC_1000")
+plot_regional_time_series(region = "15_low_lats", DH = "NPP")
+
+plot_regional_time_series(region = "EQ_Pacific", DH = "POC_100")
+plot_regional_time_series(region = "EQ_Pacific", DH = "POC_MLDmax")
+plot_regional_time_series(region = "EQ_Pacific", DH = "POC_PCD")
+plot_regional_time_series(region = "EQ_Pacific", DH = "POC_EZ")
+plot_regional_time_series(region = "EQ_Pacific", DH = "POC_1000")
+plot_regional_time_series(region = "EQ_Pacific", DH = "NPP")
+
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "POC_100")
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "POC_MLDmax")
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "POC_PCD")
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "POC_EZ")
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "POC_1000")
+plot_regional_time_series(region = "low_lats_no_EQ_Pacific", DH = "NPP")
+
+plot_regional_time_series(region = "North_Atlantic", DH = "POC_100")
+plot_regional_time_series(region = "North_Atlantic", DH = "POC_MLDmax")
+plot_regional_time_series(region = "North_Atlantic", DH = "POC_PCD")
+plot_regional_time_series(region = "North_Atlantic", DH = "POC_EZ")
+plot_regional_time_series(region = "North_Atlantic", DH = "POC_1000")
+plot_regional_time_series(region = "North_Atlantic", DH = "NPP")
+
+combine_figs(DH = 100)
+combine_figs(DH = "MLDmax")
+combine_figs(DH = 1000)
+combine_figs(DH = "PCD")
+combine_figs(DH = "EZ")
+combine_figs(DH = "NPP")
+
+combine_interrelations(DH = "POC_100", region = "SO_50")
+combine_interrelations(DH = "POC_100", region = "SO_60")
+combine_interrelations(DH = "POC_100", region = "low_lats_no_EQ_Pacific")
+combine_interrelations(DH = "POC_100", region = "North_Atlantic")
+combine_interrelations(DH = "POC_100", region = "EQ_Pacific")
+
+```
+
+
+8. Plot regional time series - e-ratio and TE
+```{r}
+
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/regional_time_series_analysis/code/")
+source('plot_regional_time_series_TE_e_ratio.R')
+
+regions = c("SO_50", "SO_60", "30_low_lats", "15_low_lats","EQ_Pacific", "low_lats_no_EQ_Pacific", "North_Atlantic")
+
+
+lapply(regions,plot_regional_ts_TE_e_ratio, DH = "POC_100")
+lapply(regions,plot_regional_ts_TE_e_ratio, DH = "POC_PCD")
+lapply(regions,plot_regional_ts_TE_e_ratio, DH = "POC_EZ")
+lapply(regions,plot_regional_ts_TE_e_ratio, DH = "POC_MLDmax")
+lapply(regions,plot_regional_ts_TE_e_ratio, DH = "POC_1000")
+
+combine_regional_TE(DH = "POC_100")
+combine_regional_TE(DH = "POC_PCD")
+combine_regional_TE(DH = "POC_EZ")
+combine_regional_TE(DH = "POC_MLDmax")
+
+combine_regional_e_ratio(DH = "POC_100")
+combine_regional_e_ratio(DH = "POC_PCD")
+combine_regional_e_ratio(DH = "POC_EZ")
+combine_regional_e_ratio(DH = "POC_MLDmax")
+combine_regional_e_ratio(DH = "POC_1000")
+
+
+```
+

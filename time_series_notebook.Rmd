@@ -1,0 +1,789 @@
+---
+title: "Time Series Analysis Notebook"
+author: Stevie Walker
+output: html_notebook
+description: calculating and plotting globally integrated time series change in POC flux at each depth horizon, NPP, stratification, TE, e-ratio
+
+---
+
+1. Calculating globally integrated POC flux at 100m for every year (1850-2100)
+```{r}
+
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('get_time.R')
+setwd('~/time_series_analysis/code/')
+source('calc_time_series_epc100.R')
+source('calc_time_series_expc.R')
+
+## CESM ---------------
+
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'epc100_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'epc100_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012.nc')
+
+time_series_100(model.name = "CESM")
+
+## CM4 --------------
+
+get_time(data.path = "~/senior_thesis/combined_CM4_files/",
+         file.name = 'expc_Oyr_GFDL-CM4_historical_r1i1p1f1_gr_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_CM4_files/",
+         file.name = 'expc_Oyr_GFDL-CM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+#use time series expc function because there is no epc100 data for this model, so you have to interpolate to get 100m POC flux
+time_series_expc(model.name = "CM4",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = 100)
+
+## CMCC ---------------
+
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'epc100_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'epc100_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_100(model.name = "CMCC")
+
+## EC-Earth ------------
+
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'epc100_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'epc100_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_100(model.name = "EC-Earth")
+
+## GFDL ----------------
+
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'epc100_Omon_GFDL-ESM4_historical_r1i1p1f1_gr_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'epc100_Omon_GFDL-ESM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+time_series_100(model.name = "GFDL")
+
+##IPSL -------------
+
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'epc100_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'epc100_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_100(model.name = "IPSL")
+
+## MPI -------------
+
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'epc100_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'epc100_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_100(model.name = "MPI")
+
+## UKESM -------------
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'epc100_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'epc100_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc')
+
+time_series_100(model.name = "UKESM")
+
+```
+
+
+2. Calculate globally integrated POC flux time series at MLDmax
+    - first calculate time series MLDmax arrays
+```{r}
+
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('get_time.R')
+setwd('~/time_series_analysis/code/')
+source('calc_time_series_MLDmax.R')
+source('calc_time_series_expc.R')
+source('calc_time_series_expc_UKESM.R')
+
+## CESM ----------
+
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'mlotst_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'mlotst_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012.nc')
+
+time_series_MLDmax("CESM")
+
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'expc_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'expc_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "CESM",
+                 lon.length = 1:320,
+                 lat.length = 1:384,
+                 DH = "MLDmax")
+
+## CM4 ---------------
+
+get_time(data.path = "~/senior_thesis/combined_CM4_files/",
+         file.name = 'mlotst_Omon_GFDL-CM4_historical_r1i1p1f1_gr_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_CM4_files/",
+         file.name = 'mlotst_Omon_GFDL-CM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+time_series_MLDmax("CM4")
+
+time_series_expc(model.name = "CM4",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = "MLDmax")
+
+## CMCC --------------
+
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'mlotst_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'mlotst_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_MLDmax("CMCC")
+
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'expc_Oyr_CMCC-ESM2_historical_r1i1p1f1_gn_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'expc_Oyr_CMCC-ESM2_ssp585_r1i1p1f1_gn_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "CMCC",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = "MLDmax")
+
+
+## EC-Earth --------------
+
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'mlotst_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'mlotst_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_MLDmax("EC-Earth")
+
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "EC-Earth",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = "MLDmax")
+
+## GFDL ------------------
+
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'mlotst_Omon_GFDL-ESM4_historical_r1i1p1f1_gr_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'mlotst_Omon_GFDL-ESM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+time_series_MLDmax("GFDL")
+
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'expc_Oyr_GFDL-ESM4_historical_r1i1p1f1_gr_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/",
+         file.name = 'expc_Oyr_GFDL-ESM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "GFDL",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = "MLDmax")
+
+## IPSL -------------
+
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'mlotst_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'mlotst_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_MLDmax("IPSL")
+
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'expc_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/",
+         file.name = 'expc_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "IPSL",
+                 lon.length = 1:362,
+                 lat.length = 1:332,
+                 DH = "MLDmax")
+
+## MPI --------------------
+
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'mlotst_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'mlotst_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012.nc')
+
+time_series_MLDmax("MPI")
+
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_MPI_files/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100.nc')
+
+#calculating globally integrated POC flux at MLDmax from 1850-2100
+time_series_expc(model.name = "MPI",
+                 lon.length = 1:802,
+                 lat.length = 1:404,
+                 DH = "MLDmax")
+
+##UKESM --------------
+
+# special code because the files are too big to combine
+
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('get_time.R')
+setwd('~/time_series_analysis/code/')
+source('calc_time_series_expc_UKESM.R')
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'mlotst_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'mlotst_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc')
+
+time_series_MLDmax("UKESM")
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-189912.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_190001-194912.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_195001-199912.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_200001-201412.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-204912.nc')
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/",
+         file.name = 'expc_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_205001-210012.nc')
+
+time_series_expc_UKESM(DH = "MLDmax", file = 1)
+time_series_expc_UKESM(DH = "MLDmax", file = 2)
+time_series_expc_UKESM(DH = "MLDmax", file = 3)
+time_series_expc_UKESM(DH = "MLDmax", file = 4)
+time_series_expc_UKESM(DH = "MLDmax", file = 5)
+time_series_expc_UKESM(DH = "MLDmax", file = 6)
+
+#combine UKESM files
+
+setwd("~/senior_thesis/plotting_dataframes/time_series/expc_MLDmax/UKESM_uncombined/")
+df.sep <- list.files(pattern = "UKESM")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #store into list
+  time.series[[i]] <- df
+}
+
+combined <- time.series %>%
+  bind_rows
+
+#delete duplicate year NA rows
+combined <- combined[,-c(1)]
+
+write_csv(combined, "~/time_series_analysis/files/POC_MLDmax/UKESM_time_series_expc_MLDmax.csv")
+
+```
+
+
+3. Calculate globally integrated time series at 1000m depth horizon
+```{r}
+
+setwd('~/senior_thesis/')
+source('libraries.R')
+source('get_time.R')
+setwd('~/time_series_analysis/code/')
+source('calc_time_series_expc.R')
+source('calc_time_series_expc_UKESM.R')
+
+#already checked time steps in the previous step
+
+# CESM ---------
+
+#calculating globally integrated POC flux at 1000m from 1850-2100
+time_series_expc(model.name = "CESM",
+                 lon.length = 1:320,
+                 lat.length = 1:384,
+                 DH = 1000)
+
+# CM4 ---------
+
+time_series_expc(model.name = "CM4",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = 1000)
+
+# CMCC ------------
+
+time_series_expc(model.name = "CMCC",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = 1000)
+
+# EC-Earth -------------
+
+time_series_expc(model.name = "EC-Earth",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = 1000)
+
+# GFDL ----------------
+
+time_series_expc(model.name = "GFDL",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = 1000)
+
+#IPSL ------------
+
+time_series_expc(model.name = "IPSL",
+                 lon.length = 1:362,
+                 lat.length = 1:332,
+                 DH = 1000)
+
+#MPI -----------
+
+time_series_expc(model.name = "MPI",
+                 lon.length = 1:802,
+                 lat.length = 1:404,
+                 DH = 1000)
+
+#UKESM --------------
+
+time_series_expc_UKESM(DH = 1000, file = 1)
+time_series_expc_UKESM(DH = 1000, file = 2)
+time_series_expc_UKESM(DH = 1000, file = 3)
+time_series_expc_UKESM(DH = 1000, file = 4)
+time_series_expc_UKESM(DH = 1000, file = 5)
+time_series_expc_UKESM(DH = 1000, file = 6)
+
+#combine UKESM files
+
+setwd("~/senior_thesis/plotting_dataframes/time_series/expc_1000/UKESM_uncombined/")
+df.sep <- list.files(pattern = "UKESM")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #store into list
+  time.series[[i]] <- df
+}
+
+combined <- time.series %>%
+  bind_rows
+
+write_csv(combined, "~/senior_thesis/plotting_dataframes/time_series/expc_1000/UKESM_time_series_expc_1000.csv")
+
+```
+
+
+4. Calculate POC flux at euphotic zone depth
+    - calculate ez depth arrays first
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+source("get_time.R")
+setwd("~/time_series_analysis/code/")
+source("calc_time_series_ez_depth.R")
+source("calc_time_series_expc_ez.R")
+source("calc_time_series_expc_UKESM.R")
+
+#already checked expc time steps 
+
+## CESM --------------
+
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'pp_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100.nc')
+get_time(data.path = "~/senior_thesis/combined_CESM_files/",
+         file.name = 'pp_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014.nc')
+
+time_series_ez_depth(model.name = "CESM",
+                     lon.length = 1:320,
+                     lat.length = 1:384,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "CESM",
+                    lon.length = 1:320,
+                    lat.length = 1:384)
+
+## CM4 ------------
+
+get_time(data.path = "~/senior_thesis/combined_CM4_files/", file.name = 'pp_Oyr_GFDL-CM4_historical_r1i1p1f1_gr_1850-2014.nc')
+get_time(data.path = "~/senior_thesis/combined_CM4_files/", file.name = 'pp_Oyr_GFDL-CM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+#this one is done at 10% max NPP
+time_series_ez_depth(model.name = "CM4",
+                     lon.length = 1:360,
+                     lat.length = 1:180,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "CM4",
+                    lon.length = 1:360,
+                    lat.length = 1:180)
+
+## CMCC -----------
+
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'pp_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc')
+get_time(data.path = "~/senior_thesis/combined_CMCC_files/",
+         file.name = 'pp_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc')
+
+time_series_ez_depth(model.name = "CMCC",
+                     lon.length = 1:362,
+                     lat.length = 1:292,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "CMCC",
+                    lon.length = 1:362,
+                    lat.length = 1:292)
+
+## EC-Earth ---------
+
+get_time(data.path = "~/senior_thesis/combined_EC-Earth_files/",
+         file.name = 'pp_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1_gn_2015-2100.nc')
+
+#MISSING HISTORICAL DATA
+
+time_series_ez_depth(model.name = "EC-Earth",
+                     lon.length = 1:362,
+                     lat.length = 1:292,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "EC-Earth",
+                    lon.length = 1:362,
+                    lat.length = 1:292)
+
+## GFDL ---------
+
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/", file.name = 'pp_Oyr_GFDL-ESM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+get_time(data.path = "~/senior_thesis/combined_GFDL_files/", file.name = 'pp_Oyr_GFDL-ESM4_historical_r1i1p1f1_gr_1850-2014.nc')
+
+time_series_ez_depth(model.name = "GFDL",
+                     lon.length = 1:360,
+                     lat.length = 1:180,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "GFDL",
+                    lon.length = 1:360,
+                    lat.length = 1:180)
+
+## IPSL ----------
+
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/", file.name = 'pp_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100.nc')
+get_time(data.path = "~/senior_thesis/combined_IPSL_files/", file.name = 'pp_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014.nc')
+
+time_series_ez_depth(model.name = "IPSL",
+                     lon.length = 1:362,
+                     lat.length = 1:332,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "IPSL",
+                     lon.length = 1:362,
+                     lat.length = 1:332)
+
+## MPI ----------
+
+get_time(data.path = "~/senior_thesis/combined_MPI_files/", file.name = 'pp_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100.nc')
+get_time(data.path = "~/senior_thesis/combined_MPI_files/", file.name = 'pp_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014.nc')
+
+time_series_ez_depth(model.name = "MPI",
+                     lon.length = 1:802,
+                     lat.length = 1:404,
+                     UKESM.file = NA)
+
+time_series_expc_ez(model.name = "MPI",
+                     lon.length = 1:802,
+                     lat.length = 1:404)
+
+## UKESM ----------
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/", file.name = 'pp_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc')
+
+#2015-2100
+time_series_ez_depth(model.name = "UKESM",
+                     lon.length = 1:360,
+                     lat.length = 1:330,
+                     UKESM.file = 5)
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/", file.name = 'pp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-189912.nc')
+
+#1850-1899
+time_series_ez_depth(model.name = "UKESM",
+                     lon.length = 1:360,
+                     lat.length = 1:330,
+                     UKESM.file = 1)
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/", file.name = 'pp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_190001-194912.nc')
+
+#1900-1949
+time_series_ez_depth(model.name = "UKESM",
+                     lon.length = 1:360,
+                     lat.length = 1:330,
+                     UKESM.file = 2)
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/", file.name = 'pp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_195001-199912.nc')
+
+#1950-1999
+time_series_ez_depth(model.name = "UKESM",
+                     lon.length = 1:360,
+                     lat.length = 1:330,
+                     UKESM.file = 3)
+
+get_time(data.path = "~/senior_thesis/combined_UKESM_files/", file.name = 'pp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_200001-201412.nc')
+
+#2000-2014
+time_series_ez_depth(model.name = "UKESM",
+                     lon.length = 1:360,
+                     lat.length = 1:330,
+                     UKESM.file = 4)
+
+#calculate POC flux at ez depth time series
+time_series_expc_UKESM(DH = "ez_depth", file = 1)
+time_series_expc_UKESM(DH = "ez_depth", file = 2)
+time_series_expc_UKESM(DH = "ez_depth", file = 3)
+time_series_expc_UKESM(DH = "ez_depth", file = 4)
+time_series_expc_UKESM(DH = "ez_depth", file = 5)
+time_series_expc_UKESM(DH = "ez_depth", file = 6)
+
+#combine UKESM files
+
+setwd("~/senior_thesis/plotting_dataframes/time_series/expc_ez/UKESM_uncombined/")
+df.sep <- list.files(pattern = "UKESM")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #store into list
+  time.series[[i]] <- df
+}
+
+combined <- time.series %>%
+  bind_rows
+
+write_csv(combined, "~/senior_thesis/plotting_dataframes/time_series/expc_ez/UKESM_time_series_expc_ez.csv")
+
+```
+
+
+5. Calculate POC flux at the PCD
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/time_series_analysis/code/")
+source("calc_time_series_expc.R")
+source("calc_time_series_expc_UKESM.R")
+
+#already checked time steps in the previous step
+
+# CESM ---------
+
+time_series_expc(model.name = "CESM",
+                 lon.length = 1:320,
+                 lat.length = 1:384,
+                 DH = "PCD")
+
+# CM4 -------------
+
+time_series_expc(model.name = "CM4",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = "PCD")
+
+# CMCC ------------
+
+time_series_expc(model.name = "CMCC",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = "PCD")
+
+# EC-Earth -------------
+
+time_series_expc(model.name = "EC-Earth",
+                 lon.length = 1:362,
+                 lat.length = 1:292,
+                 DH = "PCD")
+
+# GFDL ----------------
+
+time_series_expc(model.name = "GFDL",
+                 lon.length = 1:360,
+                 lat.length = 1:180,
+                 DH = "PCD")
+
+#IPSL ------------
+
+time_series_expc(model.name = "IPSL",
+                 lon.length = 1:362,
+                 lat.length = 1:332,
+                 DH = "PCD")
+
+#MPI -----------
+
+time_series_expc(model.name = "MPI",
+                 lon.length = 1:802,
+                 lat.length = 1:404,
+                 DH = "PCD")
+
+#UKESM --------------
+
+time_series_expc_UKESM(DH = "PCD", file = 1)
+time_series_expc_UKESM(DH = "PCD", file = 2)
+time_series_expc_UKESM(DH = "PCD", file = 3)
+time_series_expc_UKESM(DH = "PCD", file = 4)
+time_series_expc_UKESM(DH = "PCD", file = 5)
+time_series_expc_UKESM(DH = "PCD", file = 6)
+
+#combine UKESM files
+
+setwd("~/time_series_analysis/files/POC_PCD/UKESM_uncombined/")
+df.sep <- list.files(pattern = "UKESM")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #store into list
+  time.series[[i]] <- df
+}
+
+combined <- time.series %>%
+  bind_rows
+
+write_csv(combined, "~/time_series_analysis/files/POC_PCD/UKESM_time_series_expc_PCD.csv")
+
+```
+
+
+6. Calculate globally integrated NPP time series (1850-2100)
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+source("get_time.R")
+setwd("~/time_series_analysis/code/")
+source("calc_time_series_npp.R")
+
+## CESM --------------
+
+#Z length = 15
+time_series_npp(model.name = "CESM",
+                lon.length = 1:320,
+                lat.length = 1:384)
+
+# CM4 --------------
+
+time_series_npp(model.name = "CM4",
+                lon.length = 1:360,
+                lat.length = 1:180)
+
+## CMCC --------------
+
+# v = 1:85 and 1:165
+#Z length = 50
+time_series_npp(model.name = "CMCC",
+                lon.length = 1:362,
+                lat.length = 1:292)
+
+  
+## EC-Earth -------------
+
+#missing historical data
+# v = 1:86
+#Z length = 75
+time_series_npp(model.name = "EC-Earth",
+                lon.length = 1:362,
+                lat.length = 1:292)
+
+## GFDL ----------------
+
+#v = 1:85 and 1:164
+#Z length = 35
+time_series_npp(model.name = "GFDL",
+                lon.length = 1:360,
+                lat.length = 1:180)
+
+#IPSL ------------
+
+#v = 1:86 1:165
+#Z length = 75
+time_series_npp(model.name = "IPSL",
+                lon.length = 1:362,
+                lat.length = 1:332)
+
+
+#MPI -----------
+
+#Z length = 40
+time_series_npp(model.name = "MPI",
+                lon.length = 1:802,
+                lat.length = 1:404)
+
+#UKESM ------------
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+source("get_time.R")
+source("calc_time_series_npp_UKESM.R")
+
+
+time_series_npp_UKESM(UKESM.file = 1)
+time_series_npp_UKESM(UKESM.file = 2)
+time_series_npp_UKESM(UKESM.file = 3)
+time_series_npp_UKESM(UKESM.file = 4)
+time_series_npp_UKESM(UKESM.file = 5)
+
+
+#NOTE: Run this in a script, it doesn't work in the notebook for some reason
+setwd("~/senior_thesis/plotting_dataframes/time_series/NPP/UKESM_uncombined/")
+df.sep <- list.files(pattern = "UKESM")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #store into list
+  time.series[[i]] <- df
+}
+
+combined <- time.series %>%
+  bind_rows
+
+write_csv(combined, "~/senior_thesis/plotting_dataframes/time_series/NPP/UKESM_time_series_npp.csv")
+
+```

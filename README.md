@@ -11,7 +11,7 @@ All code was run in a Microsoft Azure Linux server, enabling the analysis of lar
 Scripts used (in the order you should run them): 
 
 
-1. ESM FILE DOWNLOAD AND PREPARATION
+ESM FILE DOWNLOAD AND PREPARATION
 
 
 1. libraries.R: downloads all packages and loads all libraries needed for analysis
@@ -20,7 +20,7 @@ Scripts used (in the order you should run them):
 4. grab_metadata.R: extracts metadata from netcdf files
 
 
-1. TIME SERIES ANALYSIS
+TIME SERIES ANALYSIS
 
 
 1. get_time.R: extracts time steps for each file
@@ -36,10 +36,9 @@ Scripts used (in the order you should run them):
 11. plot_time_series_absolute.R: plots normalized absolute time series for all variables
 
 
-2. SPATIAL MAPS ANALYSIS
+SPATIAL MAPS ANALYSIS
 
 
-1. libraries.R: downloads all packages and loads all libraries needed for analysis
 2. regrid_nc.R: calls CDO command line suite to regrid models using inverse distance weighted average interpolation (remapdis)
 3. calc_multimodel_avg.R: calculates multimodel average of any given variable. use calc_multimodel_avg for all POC flux variables, MLDmax, EZ depth, NPP. Use calc_multimodel_avg_2 for TE and e-ratio. Use calc_multimodel_avg_5 for 5% EZ depth metric. 
 3. rg_calc_epc100_avg.R: calculates historical, long-term, and change in POC flux at 100 m
@@ -61,7 +60,7 @@ Scripts used (in the order you should run them):
 19. DH_differences_assessment.R: creates plots comparing POC flux at EZ depth, MLDmax, or PCD to 100 m
 
 
-3. REGIONAL TIME SERIES ANALYSIS
+REGIONAL TIME SERIES ANALYSIS
 
 
 1. calc_rg_time_series_MLDmax.R: calculate MLDmax global matrices (1850-2100) from regridded model output to use in regional time series interpolation

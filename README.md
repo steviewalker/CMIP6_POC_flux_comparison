@@ -3,7 +3,7 @@ Multimodel comparison of POC flux changes across multiple export depth horizons 
 Code written by Stevie Walker
 2020-2023
 
-This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files.
+This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files. paper_figs.R: plots all figures in the manuscript.
 
 All code was run in a Microsoft Azure Linux server, enabling the analysis of large netcdf model output files. Different virtual machine sizes can be used, but I have found the F series v2 VMs to be the best because they have a performance boost for vector processing workloads and can be sized up to have a high number of CPUs. This is a benefit because code can be run in multiple R sessions. I used the TMUX terminal multiplexer to run code in the background, since some functions take over 2 weeks to run.
 
@@ -39,8 +39,8 @@ TIME SERIES ANALYSIS
 SPATIAL MAPS ANALYSIS
 
 
-2. regrid_nc.R: calls CDO command line suite to regrid models using inverse distance weighted average interpolation (remapdis)
-3. calc_multimodel_avg.R: calculates multimodel average of any given variable. use calc_multimodel_avg for all POC flux variables, MLDmax, EZ depth, NPP. Use calc_multimodel_avg_2 for TE and e-ratio. Use calc_multimodel_avg_5 for 5% EZ depth metric. 
+1. regrid_nc.R: calls CDO command line suite to regrid models using inverse distance weighted average interpolation (remapdis)
+2. calc_multimodel_avg.R: calculates multimodel average of any given variable. use calc_multimodel_avg for all POC flux variables, MLDmax, EZ depth, NPP. Use calc_multimodel_avg_2 for TE and e-ratio. Use calc_multimodel_avg_5 for 5% EZ depth metric. 
 3. rg_calc_epc100_avg.R: calculates historical, long-term, and change in POC flux at 100 m
 4. rg_plot_POC_100.R: plots historical, long-term, and change in POC flux at 100 m
 5. rg_calc_MLD_max.R: calculates historical, long-term, and change in maximum annual mixed layer depth
@@ -77,6 +77,3 @@ REGIONAL TIME SERIES ANALYSIS
 12. calc_regional_e_ratio_TE.R: calculates regionally integrated e-ratio and TE time series
 13. plot_regional_time_series.R: plots regional time series of POC fluxes and NPP
 14. plot_regional_time_series_TE_e_ratio.R: plots regional time series of TE and e-ratio
-
-
-paper_figs.R: plots all figures in the manuscript

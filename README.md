@@ -1,18 +1,18 @@
 # CMIP6_POC_flux_comparison
 Multimodel comparison of POC flux changes across multiple export depth horizons in CMIP6 ESMs, code written by Stevie Walker, 2020-2025
 
-This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files. paper_figs.R: plots all figures in the manuscript.
+This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files. paper_figs.R and supplemental_figs.R: plots all figures in the manuscript.
 
 All code was run in a Microsoft Azure Linux server, enabling the analysis of large netcdf model output files. Different virtual machine sizes can be used, but I have found the F series v2 VMs to be the best because they have a performance boost for vector processing workloads and can be sized up to have a high number of CPUs. This is a benefit because code can be run in multiple R sessions. I used the TMUX terminal multiplexer to run code in the background, since some functions take over 2 weeks to run.
 
 
-Scripts used (in the order you should run them): 
+Scripts used (in the recommended order you should run them): 
 
 
 ESM FILE DOWNLOAD AND PREPARATION
 
 
-1. libraries.R: downloads all packages and loads all libraries needed for analysis
+1. libraries.R: downloads all packages and loads all libraries you could possibly need for analysis
 2. get_nc_thredds.R: downloads CMIP6 netcdf files
 3. combine_ncfiles.R: combine multipart files into one file from 1850-2014 (historical) or 2015-2100 (SSP5-8.5)
 4. grab_metadata.R: extracts metadata from netcdf files

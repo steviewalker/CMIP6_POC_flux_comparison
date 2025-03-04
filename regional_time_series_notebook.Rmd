@@ -15,29 +15,39 @@ setwd("~/regional_time_series_analysis/code")
 source('calc_rg_time_series_MLDmax.R')
 source('calc_rg_time_series_EZ_depth.R')
 
-models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM")
 
-lapply(models, rg_time_series_MLDmax)
+rg_time_series_MLDmax("CESM")
+rg_time_series_MLDmax("CM4")
+rg_time_series_MLDmax("CMCC")
+rg_time_series_MLDmax("EC-Earth")
+rg_time_series_MLDmax("GFDL")
+rg_time_series_MLDmax("IPSL")
+rg_time_series_MLDmax("MPI")
+rg_time_series_MLDmax("UKESM")
 
-models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI")
 
-lapply(models, rg_time_series_ez_depth, UKESM.file = NA)
 
-#must run in chunks since UKESM NPP file is too big to combine
+rg_time_series_ez_depth(model.name = "CESM", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "CM4", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "CMCC", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "EC-Earth", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "GFDL", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "IPSL", UKESM.file = NA)
+rg_time_series_ez_depth(model.name = "MPI", UKESM.file = NA)
+
 rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 1)
 rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 2)
 rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 3)
 rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 4)
 rg_time_series_ez_depth(model.name = "UKESM", UKESM.file = 5)
 
+
 ```
 
-
 2. Calculate area of each region and historical and long-term fluxes
-The area sums come from GFDL regridded data, calc_GFDL_region_area.R
+The area sums come from GFDL regridded data, calc_region_area.R
 ```{r}
 setwd("~/regional_time_series_analysis/code")
-source('calc_GFDL_region_area.R')
 source('calc_regional_time_series_averages.R')
 
 calc_region_sum(DH = "POC_100")
@@ -46,6 +56,9 @@ calc_region_sum(DH = "POC_MLDmax")
 calc_region_sum(DH = "POC_PCD")
 calc_region_sum(DH = "POC_EZ")
 calc_region_sum(DH = "NPP")
+
+
+
 
 ```
 Per area flux = Pg C/m2/yr
@@ -305,33 +318,31 @@ lapply(regions, combine_regional_ts_UKESM, DH = "EZ")
 setwd("~/senior_thesis/")
 source('libraries.R')
 setwd("~/regional_time_series_analysis/code/")
-source('calc_regional_time_series_npp.R')
-source('calc_regional_time_series_npp_UKESM.R')
-source('calc_regional_time_series_expc_UKESM.R') # for combining files
-files = 1:5
+source('calc_regional_time_series_intpp.R')
+#source('calc_regional_time_series_npp_UKESM.R')
+#source('calc_regional_time_series_expc_UKESM.R') # for combining files
+#files = 1:5
 
-#divide into lots of tmux sessions because this takes longer to run, CMCC takes even longer
-models = c("CESM","CM4","EC-Earth") 
-models =  c("GFDL","IPSL", "MPI")
-          
-lapply(models, regional_ts_npp, region = "SO_50")
-regional_ts_npp(model.name = "CMCC", region = "SO_50")
+#divide into lots of tmux sessions because this takes longer to run
+models = c("CESM","CM4","EC-Earth","UKESM") 
+models =  c("GFDL","IPSL", "MPI", "CMCC")
 
+# 4 regions used in manuscript
 lapply(models, regional_ts_npp, region = "SO_60")
-regional_ts_npp(model.name = "CMCC", region = "SO_60")
 
-lapply(models, regional_ts_npp, region = "30_low_lats")
-regional_ts_npp(model.name = "CMCC", region = "30_low_lats")
-
-lapply(models, regional_ts_npp, region = "15_low_lats")
-regional_ts_npp(model.name = "CMCC", region = "15_low_lats")
+lapply(models, regional_ts_npp, region = "low_lats_no_EQ_Pacific")
 
 lapply(models, regional_ts_npp, region = "North_Atlantic")
 
 lapply(models, regional_ts_npp, region = "EQ_Pacific")
 
-lapply(models, regional_ts_npp, region = "low_lats_no_EQ_Pacific")
-regional_ts_npp(model.name = "CMCC", region = "low_lats_no_EQ_Pacific")
+#additional regions          
+lapply(models, regional_ts_npp, region = "SO_50")
+
+lapply(models, regional_ts_npp, region = "30_low_lats")
+
+lapply(models, regional_ts_npp, region = "15_low_lats")
+
 
 #UKESM
 lapply(files, regional_ts_npp_UKESM, region = "SO_50")
@@ -370,6 +381,9 @@ lapply(regions, regional_ts_e_ratio, DH = "POC_PCD")
 lapply(regions, regional_ts_e_ratio, DH = "POC_EZ")
 lapply(regions, regional_ts_e_ratio, DH = "POC_MLDmax")
 lapply(regions, regional_ts_e_ratio, DH = "POC_1000")
+
+
+
 
 ```
 
@@ -477,4 +491,6 @@ combine_regional_e_ratio(DH = "POC_1000")
 
 
 ```
+
+
 

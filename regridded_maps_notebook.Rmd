@@ -1,0 +1,1246 @@
+---
+title: "CMIP6 POC Flux Comparisons Master Notebook - Spatial Analysis"
+output: html_notebook
+author: "Stevie Walker"
+---
+
+1. Install and load libraries 
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+
+```
+
+2. Regrid nc files
+- GFDL is already on a regular grid, so the files in ~/spatial_analysis/regridded_nc_files/GFDL_rg/ are just the original combined nc files
+```{r}
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source('regrid_nc.R')
+
+##epc100 ------------
+
+regrid(model.name = "CESM", nc.file = "epc100_Omon_CESM2_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CESM", nc.file = "epc100_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "CMCC", nc.file = "epc100_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CMCC", nc.file = "epc100_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "EC-Earth", nc.file = "epc100_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "EC-Earth", nc.file = "epc100_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "IPSL", nc.file = "epc100_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "IPSL", nc.file = "epc100_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012.nc") #didn't work
+
+regrid(model.name = "MPI", nc.file = "epc100_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "MPI", nc.file = "epc100_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "UKESM", nc.file = "epc100_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412.nc")
+regrid(model.name = "UKESM", nc.file = "epc100_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc")
+
+##mlotst -----------
+
+regrid(model.name = "CESM", nc.file = "mlotst_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CESM", nc.file = "mlotst_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "CMCC", nc.file = "mlotst_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CMCC", nc.file = "mlotst_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "EC-Earth", nc.file = "mlotst_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "EC-Earth", nc.file = "mlotst_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "IPSL", nc.file = "mlotst_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "IPSL", nc.file = "mlotst_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "MPI", nc.file = "mlotst_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "MPI", nc.file = "mlotst_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "UKESM", nc.file = "mlotst_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412.nc")
+regrid(model.name = "UKESM", nc.file = "mlotst_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc")
+
+##expc ------------
+
+regrid(model.name = "CESM", nc.file = "expc_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "CESM", nc.file = "expc_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "CMCC", nc.file = "expc_Oyr_CMCC-ESM2_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "CMCC", nc.file = "expc_Oyr_CMCC-ESM2_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "EC-Earth", nc.file = "expc_Oyr_EC-Earth3-CC_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "EC-Earth", nc.file = "expc_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "IPSL", nc.file = "expc_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "IPSL", nc.file = "expc_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "MPI", nc.file = "expc_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "MPI", nc.file = "expc_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+#do an lapply here
+expc_UKESM = list.files(path = "~/senior_thesis/combined_UKESM_files/", pattern = "expc")
+
+lapply(expc_UKESM, regrid, model.name = "UKESM")
+
+##pp -------------
+
+regrid(model.name = "CESM", nc.file = "pp_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "CESM", nc.file = "pp_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "CMCC", nc.file = "pp_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CMCC", nc.file = "pp_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+#no historical EC-Earth data available
+regrid(model.name = "EC-Earth", nc.file = "pp_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "IPSL", nc.file = "pp_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "IPSL", nc.file = "pp_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+regrid(model.name = "MPI", nc.file = "pp_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014.nc")
+regrid(model.name = "MPI", nc.file = "pp_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100.nc")
+
+#do an lapply here
+pp_UKESM = list.files(path = "~/senior_thesis/combined_UKESM_files/", pattern = "pp")
+
+lapply(pp_UKESM,regrid, model.name = "UKESM")
+
+## intpp ------------
+
+regrid(model.name = "CESM", nc.file = "intpp_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CESM", nc.file = "intpp_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "CMCC", nc.file = "intpp_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "CMCC", nc.file = "intpp_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "EC-Earth", nc.file = "intpp_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "EC-Earth", nc.file = "intpp_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "IPSL", nc.file = "intpp_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "IPSL", nc.file = "intpp_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "MPI", nc.file = "intpp_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412.nc")
+regrid(model.name = "MPI", nc.file = "intpp_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012.nc")
+
+regrid(model.name = "UKESM", nc.file = "intpp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412.nc")
+regrid(model.name = "UKESM", nc.file = "intpp_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012.nc")
+
+
+## areacello ----------
+
+regrid(model.name = "CESM", nc.file = "areacello_Ofx_CESM2_historical_r10i1p1f1_gn.nc")
+regrid(model.name = "CMCC", nc.file = "areacello_Ofx_CMCC-ESM2_historical_r1i1p1f1_gn.nc")
+regrid(model.name = "EC-Earth", nc.file = "areacello_Ofx_EC-Earth3-CC_historical_r1i1p1f1_gn.nc")
+regrid(model.name = "IPSL", nc.file = "areacello_Ofx_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn.nc")
+regrid(model.name = "MPI", nc.file = "areacello_Ofx_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn.nc")
+regrid(model.name = "UKESM", nc.file = "areacello_Ofx_UKESM1-0-LL_piControl_r1i1p1f2_gn.nc")
+
+
+
+```
+
+3. Calculate historical average, long-term average, and change in POC flux at 100m
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+source("get_time.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_epc100_avg.R")
+source("rg_plot_POC_100.R")
+
+options(max.print = 2000)
+
+## CESM --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'epc100_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012_rg.nc')
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'epc100_Omon_CESM2_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_epc100_avg(model.name = "CESM")
+
+
+## CMCC -----------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'epc100_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'epc100_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_epc100_avg(model.name = "CMCC")
+
+##EC-Earth ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'epc100_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'epc100_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_epc100_avg(model.name = "EC-Earth")
+
+##GFDL --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'epc100_Omon_GFDL-ESM4_historical_r1i1p1f1_gr_185001-201412.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'epc100_Omon_GFDL-ESM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+calc_epc100_avg(model.name = "GFDL")
+
+## IPSL ------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'epc100_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'epc100_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+
+calc_epc100_avg(model.name = "IPSL")
+
+## MPI --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'epc100_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'epc100_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_epc100_avg(model.name = "MPI")
+
+## UKESM --------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'epc100_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'epc100_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412_rg.nc')
+
+calc_epc100_avg(model.name = "UKESM")
+
+#calculate multimodel average ---------
+
+calc_multimodel_avg(variable = "POC_100", varname = "epc100")
+
+#calculate multimodel sign of change agreement ---------
+calc_model_agreement(variable = "POC_100")
+
+#plot individual model maps -------
+
+setwd("~/spatial_analysis/code/")
+source("rg_plot_POC_100.R")
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+plot_POC_100("CESM")
+plot_POC_100("CM4")
+plot_POC_100("CMCC")
+plot_POC_100("EC-Earth")
+plot_POC_100("GFDL")
+plot_POC_100("IPSL")
+plot_POC_100("MPI")
+plot_POC_100("UKESM")
+plot_POC_100("multimodel")
+
+```
+
+4. Calculate historical average, long-term average, and change in maximum annual mixed layer depth
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_MLD_max.R")
+
+## CESM --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'mlotst_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'mlotst_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412_rg.nc')
+
+calc_MLD_max(model.name = "CESM")
+
+## CM4 -----------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'mlotst_Omon_GFDL-CM4_historical_r1i1p1f1_gr_185001-201412.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'mlotst_Omon_GFDL-CM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+calc_MLD_max(model.name = "CM4")
+
+
+## CMCC -----------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'mlotst_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'mlotst_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_MLD_max(model.name = "CMCC")
+
+##EC-Earth ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'mlotst_Omon_EC-Earth3-CC_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'mlotst_Omon_EC-Earth3-CC_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_MLD_max(model.name = "EC-Earth")
+
+##GFDL --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'mlotst_Omon_GFDL-ESM4_historical_r1i1p1f1_gr_185001-201412.nc')
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'mlotst_Omon_GFDL-ESM4_ssp585_r1i1p1f1_gr_201501-210012.nc')
+
+calc_MLD_max(model.name = "GFDL")
+
+## IPSL -----------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'mlotst_Omon_IPSL-CM6A-LR_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'mlotst_Omon_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+
+calc_MLD_max(model.name = "IPSL")
+
+## MPI --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'mlotst_Omon_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'mlotst_Omon_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+
+calc_MLD_max(model.name = "MPI")
+
+## UKESM ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'mlotst_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'mlotst_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-201412_rg.nc')
+
+calc_MLD_max(model.name = "UKESM")
+
+#calculate multimodel average ---------
+
+calc_multimodel_avg(variable = "MLD_max", varname = "mlotst")
+
+#calculate multimodel sign of change agreement ---------
+calc_model_agreement(variable = "MLD_max")
+
+#plotting --------
+
+setwd("~/spatial_analysis/code/")
+source("rg_plot_MLD_max.R")
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+plot_MLD_max("CESM")
+plot_MLD_max("CM4")
+plot_MLD_max("CMCC")
+plot_MLD_max("EC-Earth")
+plot_MLD_max("GFDL")
+plot_MLD_max("IPSL")
+plot_MLD_max("MPI")
+plot_MLD_max("UKESM")
+plot_MLD_max("multimodel")
+
+```
+
+5. Calculate historical average and long-term average EZ Depth
+``` {r}
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_ez_depth.R")
+source("calc_model_agreement.R")
+source("calc_multimodel_avg.R")
+source("rg_plot_ez_depth.R")
+
+## CESM --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'pp_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'pp_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100_rg.nc')
+
+calc_ez_depth(model.name = "CESM", ez.metric = 1)
+calc_ez_depth(model.name = "CESM", ez.metric = 5)
+
+## CM4 ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'pp_Oyr_GFDL-CM4_historical_r1i1p1f1_gr_1850-2014.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'pp_Oyr_GFDL-CM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+calc_ez_depth(model.name = "CM4", ez.metric = 1)
+calc_ez_depth(model.name = "CM4", ez.metric = 5)
+calc_ez_depth(model.name = "CM4", ez.metric = 10)
+
+## CMCC -----------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'pp_Omon_CMCC-ESM2_historical_r1i1p1f1_gn_185001-201412_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'pp_Omon_CMCC-ESM2_ssp585_r1i1p1f1_gn_201501-210012_rg.nc')
+
+calc_ez_depth(model.name = "CMCC", ez.metric = 1)
+calc_ez_depth(model.name = "CMCC", ez.metric = 5)
+
+##EC-Earth ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'pp_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+#missing historical data
+
+calc_ez_depth(model.name = "EC-Earth", ez.metric = 1)
+calc_ez_depth(model.name = "EC-Earth", ez.metric = 5)
+
+##GFDL --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'pp_Oyr_GFDL-ESM4_historical_r1i1p1f1_gr_1850-2014.nc')
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'pp_Oyr_GFDL-ESM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+calc_ez_depth(model.name = "GFDL", ez.metric = 1)
+calc_ez_depth(model.name = "GFDL", ez.metric = 5)
+
+## IPSL -----------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'pp_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'pp_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+
+calc_ez_depth(model.name = "IPSL", ez.metric = 1)
+calc_ez_depth(model.name = "IPSL", ez.metric = 5)
+
+## MPI --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'pp_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'pp_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2099_rg.nc')
+
+calc_ez_depth(model.name = "MPI", ez.metric = 1)
+calc_ez_depth(model.name = "MPI", ez.metric = 5)
+
+## UKESM ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'pp_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-189912_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'pp_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_201501-210012_rg.nc')
+
+calc_ez_depth(model.name = "UKESM", ez.metric = 1)
+calc_ez_depth(model.name = "UKESM", ez.metric = 5)
+
+calc_multimodel_avg(variable = "EZ_depth", varname = "pp")
+calc_multimodel_avg_5(variable = "EZ_depth", varname = "pp")
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', returnclass = "sf")
+
+plot_EZ_depth("CESM", 1)
+plot_EZ_depth("CM4", 1)
+plot_EZ_depth("CM4", 10)
+plot_EZ_depth("CMCC", 1)
+plot_EZ_depth("EC-Earth", 1)
+plot_EZ_depth("IPSL", 1)
+plot_EZ_depth("GFDL", 1)
+plot_EZ_depth("MPI", 1)
+plot_EZ_depth("UKESM", 1)
+plot_EZ_depth("multimodel", 1)
+
+plot_EZ_depth("CESM", 5)
+plot_EZ_depth("CM4", 5)
+plot_EZ_depth("CMCC", 5)
+plot_EZ_depth("EC-Earth", 5)
+plot_EZ_depth("IPSL", 5)
+plot_EZ_depth("GFDL", 5)
+plot_EZ_depth("MPI", 5)
+plot_EZ_depth("UKESM", 5)
+plot_EZ_depth("multimodel", 5)
+
+#divide into lots of tmux sessions because this takes longer to run
+models = c("CESM","UKESM","MPI") 
+models =  c("EC-Earth", "GFDL","CMCC","IPSL")
+
+lapply(models, calc_ez_depth, ez.metric = 10)
+
+
+```
+
+6. Calculate particle compensation depth
+```{r}
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_PCD.R")
+source("rg_plot_PCD.R") #this function also calculates PCD change
+source("calc_multimodel_avg.R")
+
+calc_PCD("CESM")
+calc_PCD("CMCC")
+calc_PCD("CM4")
+calc_PCD("EC-Earth")
+calc_PCD("GFDL")
+calc_PCD("IPSL")
+calc_PCD("MPI")
+calc_PCD("UKESM")
+calc_multimodel_avg(variable = "PCD", varname = "depth")
+
+plot_PCD("CESM")
+plot_PCD("CM4")
+plot_PCD("CMCC")
+plot_PCD("EC-Earth")
+plot_PCD("GFDL")
+plot_PCD("IPSL")
+plot_PCD("MPI")
+plot_PCD("UKESM")
+plot_PCD("multimodel")
+
+
+```
+
+6. Calculate historical average, long-term average, and change in POC flux at 1000m, MLDmax, EZ Depth, and PCD
+```{r}
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_expc_avg.R")
+source("calc_multimodel_avg.R")
+source("calc_model_agreement.R")
+
+## CESM --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'expc_Oyr_CESM2_historical_r10i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'expc_Oyr_CESM2_ssp585_r10i1p1f1_gn_2015-2100_rg.nc')
+
+calc_expc(model.name = "CESM", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "CESM", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "CESM", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "CESM", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "CESM", depth = "PCD", ez.metric = NA)
+
+## CM4 --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'expc_Oyr_GFDL-CM4_historical_r1i1p1f1_gr_1850-2014.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CM4_rg/",
+         file.name = 'expc_Oyr_GFDL-CM4_ssp585_r1i1p1f1_gr_2015-2100.nc')ß
+
+calc_expc(model.name = "CM4", depth = 100, ez.metric = NA)
+calc_expc(model.name = "CM4", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "CM4", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "CM4", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "CM4", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "CM4", depth = "EZ_depth", ez.metric = 10)
+calc_expc(model.name = "CM4", depth = "PCD", ez.metric = NA)
+
+## CMCC -----------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'expc_Oyr_CMCC-ESM2_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CMCC_rg/",
+         file.name = 'expc_Oyr_CMCC-ESM2_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+
+calc_expc(model.name = "CMCC", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "CMCC", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "CMCC", depth = "EZ_depth", ez.metric = 1)
+#calc_expc(model.name = "CMCC", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "CMCC", depth = "PCD", ez.metric = NA)
+
+##EC-Earth ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'expc_Oyr_EC-Earth3-CC_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/EC-Earth_rg/",
+         file.name = 'expc_Oyr_EC-Earth3-CC_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+
+calc_expc(model.name = "EC-Earth", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "EC-Earth", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "EC-Earth", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "EC-Earth", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "EC-Earth", depth = "PCD", ez.metric = NA)
+
+##GFDL --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'expc_Oyr_GFDL-ESM4_historical_r1i1p1f1_gr_1850-2014.nc')
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/GFDL_rg/",
+         file.name = 'expc_Oyr_GFDL-ESM4_ssp585_r1i1p1f1_gr_2015-2100.nc')
+
+calc_expc(model.name = "GFDL", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "GFDL", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "GFDL", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "GFDL", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "GFDL", depth = "PCD", ez.metric = NA)
+
+## IPSL -----------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'expc_Oyr_IPSL-CM6A-LR_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/IPSL_rg/",
+         file.name = 'expc_Oyr_IPSL-CM6A-LR_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+
+calc_expc(model.name = "IPSL", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "IPSL", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "IPSL", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "IPSL", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "IPSL", depth = "PCD", ez.metric = NA)
+
+## MPI --------------
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_historical_r1i1p1f1_gn_1850-2014_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/MPI_rg/",
+         file.name = 'expc_Oyr_MPI-ESM1-2-HR_ssp585_r1i1p1f1_gn_2015-2100_rg.nc')
+
+calc_expc(model.name = "MPI", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "MPI", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "MPI", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "MPI", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "MPI", depth = "PCD", ez.metric = NA)
+
+## UKESM ------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'expc_Omon_UKESM1-0-LL_historical_r1i1p1f2_gn_185001-189912_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/UKESM_rg/",
+         file.name = 'expc_Omon_UKESM1-0-LL_ssp585_r1i1p1f2_gn_205001-210012_rg.nc')
+
+calc_expc(model.name = "UKESM", depth = 1000, ez.metric = NA)
+calc_expc(model.name = "UKESM", depth = "MLD_max", ez.metric = NA)
+calc_expc(model.name = "UKESM", depth = "EZ_depth", ez.metric = 1)
+calc_expc(model.name = "UKESM", depth = "EZ_depth", ez.metric = 5)
+calc_expc(model.name = "UKESM", depth = "PCD", ez.metric = NA)
+
+# calculate multimodel average ---------
+
+calc_multimodel_avg(variable = "POC_1000", varname = "expc")
+calc_multimodel_avg(variable = "POC_MLD_max", varname = "expc")
+calc_multimodel_avg(variable = "POC_EZ_depth", varname = "expc")
+calc_multimodel_avg(variable = "POC_PCD", varname = "expc")
+calc_multimodel_avg_5(variable = "POC_EZ_depth", varname = "expc")
+
+#calculate multimodel sign of change agreement ---------
+calc_model_agreement(variable = "POC_1000")
+calc_model_agreement(variable = "POC_MLD_max")
+calc_model_agreement(variable = "POC_EZ_depth")
+calc_model_agreement(variable = "POC_PCD")
+
+# plotting -------
+
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_plot_POC_MLD_max.R")
+source("rg_plot_POC_ez_depth.R")
+source("rg_plot_POC_1000.R")
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+plot_POC_1000("CESM")
+plot_POC_1000("CM4")
+plot_POC_1000("CMCC")
+plot_POC_1000("EC-Earth")
+plot_POC_1000("GFDL")
+plot_POC_1000("IPSL")
+plot_POC_1000("MPI")
+plot_POC_1000("UKESM")
+plot_POC_1000("multimodel")
+
+plot_POC_MLD_max("CESM")
+plot_POC_MLD_max("CM4")
+plot_POC_MLD_max("CMCC")
+plot_POC_MLD_max("EC-Earth")
+plot_POC_MLD_max("GFDL")
+plot_POC_MLD_max("IPSL")
+plot_POC_MLD_max("MPI")
+plot_POC_MLD_max("UKESM")
+plot_POC_MLD_max("multimodel")
+
+plot_POC_EZ_depth("CESM",ez.metric = 1)
+plot_POC_EZ_depth("CM4", ez.metric = 1)
+plot_POC_EZ_depth("CMCC",ez.metric = 1)
+plot_POC_EZ_depth("EC-Earth",ez.metric = 1)
+plot_POC_EZ_depth("GFDL",ez.metric = 1)
+plot_POC_EZ_depth("IPSL",ez.metric = 1)
+plot_POC_EZ_depth("MPI",ez.metric = 1)
+plot_POC_EZ_depth("UKESM",ez.metric = 1)
+plot_POC_EZ_depth("multimodel",ez.metric = 1)
+
+plot_POC_EZ_depth("CESM",ez.metric = 5)
+plot_POC_EZ_depth("CM4", ez.metric = 5)
+plot_POC_EZ_depth("CMCC",ez.metric = 5)
+plot_POC_EZ_depth("EC-Earth",ez.metric = 5)
+plot_POC_EZ_depth("GFDL",ez.metric = 5)
+plot_POC_EZ_depth("IPSL",ez.metric = 5)
+plot_POC_EZ_depth("MPI",ez.metric = 5)
+plot_POC_EZ_depth("UKESM",ez.metric = 5)
+plot_POC_EZ_depth("multimodel",ez.metric = 5)
+
+plot_POC_EZ_depth("CM4", ez.metric = 10)
+
+
+plot_expc("CESM", "PCD")
+plot_expc("CM4","PCD")
+plot_expc("CMCC","PCD")
+plot_expc("EC-Earth","PCD")
+plot_expc("GFDL","PCD")
+plot_expc("IPSL","PCD")
+plot_expc("MPI","PCD")
+plot_expc("UKESM","PCD")
+plot_expc("multimodel","PCD")
+
+# calculate POC flux using 10% NPP metric ----------
+#divide into lots of tmux sessions because this takes longer to run
+models = c("CESM","CMCC") 
+models =  c("IPSL","UKESM")
+models =  c("EC-Earth", "GFDL")
+
+calc_expc(model.name = "MPI", depth = "EZ_depth", ez.metric = 10)
+lapply(models, calc_expc, depth = "EZ_depth", ez.metric = 10)
+
+```
+
+7. EZ depth metric sensitivity test - comparing 1% and 5% NPP max definitions 
+```{r}
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_plot_ez_depth.R")
+source("rg_plot_POC_ez_depth.R")
+source("calc_multimodel_avg.R")
+source("rg_calc_ez_depth_sensitivity.R")
+
+calc_ez_depth_diff("CESM")
+calc_ez_depth_diff("CMCC")
+calc_ez_depth_diff("EC-Earth")
+calc_ez_depth_diff("GFDL")
+calc_ez_depth_diff("IPSL")
+calc_ez_depth_diff("MPI")
+calc_ez_depth_diff("UKESM")
+
+calc_multimodel_avg(variable = "EZ_depth_sensitivity", varname = "pp")
+calc_multimodel_avg(variable = "POC_EZ_depth_sensitivity", varname = "pp")
+
+plot_metric_diff_EZ("CESM")
+plot_metric_diff_EZ("CMCC")
+plot_metric_diff_EZ("EC-Earth")
+plot_metric_diff_EZ("GFDL")
+plot_metric_diff_EZ("IPSL")
+plot_metric_diff_EZ("MPI")
+plot_metric_diff_EZ("UKESM")
+plot_metric_diff_EZ("multimodel")
+
+plot_metric_diff_POC_EZ("CESM")
+plot_metric_diff_POC_EZ("CMCC")
+plot_metric_diff_POC_EZ("EC-Earth")
+plot_metric_diff_POC_EZ("GFDL")
+plot_metric_diff_POC_EZ("IPSL")
+plot_metric_diff_POC_EZ("MPI")
+plot_metric_diff_POC_EZ("UKESM")
+plot_metric_diff_POC_EZ("multimodel")
+
+```
+
+8. Calculate water-column integrated historical, long-term, and change in NPP
+- no need to double check the timesteps because I already did in step 5
+```{r}
+setwd("~/senior_thesis/")
+source("libraries.R")
+setwd("~/spatial_analysis/code/")
+source("rg_calc_NPP.R")
+source("rg_calc_intpp.R")
+source("calc_multimodel_avg.R")
+source("calc_model_agreement.R")
+
+calc_npp_avg("CESM")
+calc_npp_avg("CM4")
+calc_npp_avg("CMCC")
+calc_npp_avg("EC-Earth")
+calc_npp_avg("GFDL")
+calc_npp_avg("IPSL")
+calc_npp_avg("MPI")
+calc_npp_avg("UKESM")
+
+calc_multimodel_avg("NPP")
+calc_model_agreement(variable = "NPP")
+
+#plotting -------
+
+setwd("~/spatial_analysis/code/")
+source("rg_plot_NPP.R")
+source("rg_plot_intpp.R")
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+
+plot_NPP("CESM")
+plot_NPP("CM4")
+plot_NPP("CMCC")
+plot_NPP("EC-Earth")
+plot_NPP("GFDL")
+plot_NPP("IPSL")
+plot_NPP("MPI")
+plot_NPP("UKESM")
+plot_NPP("multimodel")
+
+
+#intpp --------
+
+## CESM --------------
+
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'intpp_Omon_CESM2_historical_r10i1p1f1_gn_185001-201412_rg.nc')
+get_time(data.path = "~/spatial_analysis/regridded_nc_files/CESM_rg/",
+         file.name = 'intpp_Omon_CESM2_ssp585_r10i1p1f1_gn_201501-210012_rg.nc')
+
+#divide into lots of tmux sessions because this takes longer to run
+models = c("CESM","UKESM","CMCC") 
+models =  c("IPSL", "MPI")
+models =  c("CM4", "EC-Earth", "GFDL")
+          
+lapply(models, calc_intpp_avg)
+
+calc_intpp_avg("CM4")
+
+plot_intpp("CESM")
+plot_intpp("CM4")
+plot_intpp("CMCC")
+plot_intpp("EC-Earth")
+plot_intpp("GFDL")
+plot_intpp("IPSL")
+plot_intpp("MPI")
+plot_intpp("UKESM")
+plot_intpp("multimodel")
+
+calc_multimodel_avg_NPP("intpp")
+calc_model_agreement("intpp")
+
+```
+
+9. Calculate historical, long-term, and change in transfer efficiency from each depth horizon to 1000m
+```{r}
+setwd("~/senior_thesis/")
+source('libraries.R')
+setwd("~/spatial_analysis/code/")
+source("rg_calc_TE_e-ratio.R")
+source("calc_multimodel_avg.R")
+source("rg_plot_TE.R")
+
+calc_TE(model.name = "CESM", DH = "100")
+calc_TE(model.name = "CESM", DH = "MLD_max")
+calc_TE(model.name = "CESM", DH = "EZ_depth")
+calc_TE(model.name = "CESM", DH = "PCD")
+
+calc_TE(model.name = "CM4", DH = "100")
+calc_TE(model.name = "CM4", DH = "MLD_max")
+calc_TE(model.name = "CM4", DH = "EZ_depth")
+calc_TE(model.name = "CM4", DH = "PCD")
+
+calc_TE(model.name = "CMCC", DH = "100")
+calc_TE(model.name = "CMCC", DH = "MLD_max")
+calc_TE(model.name = "CMCC", DH = "EZ_depth")
+calc_TE(model.name = "CMCC", DH = "PCD")
+
+calc_TE(model.name = "EC-Earth", DH = "100")
+calc_TE(model.name = "EC-Earth", DH = "MLD_max")
+calc_TE(model.name = "EC-Earth", DH = "EZ_depth")
+calc_TE(model.name = "EC-Earth", DH = "PCD")
+
+calc_TE(model.name = "GFDL", DH = "100")
+calc_TE(model.name = "GFDL", DH = "MLD_max")
+calc_TE(model.name = "GFDL", DH = "EZ_depth")
+calc_TE(model.name = "GFDL", DH = "PCD")
+
+calc_TE(model.name = "IPSL", DH = "100")
+calc_TE(model.name = "IPSL", DH = "MLD_max")
+calc_TE(model.name = "IPSL", DH = "EZ_depth")
+calc_TE(model.name = "IPSL", DH = "PCD")
+
+calc_TE(model.name = "MPI", DH = "100")
+calc_TE(model.name = "MPI", DH = "MLD_max")
+calc_TE(model.name = "MPI", DH = "EZ_depth")
+calc_TE(model.name = "MPI", DH = "PCD")
+
+calc_TE(model.name = "UKESM", DH = "100")
+calc_TE(model.name = "UKESM", DH = "MLD_max")
+calc_TE(model.name = "UKESM", DH = "EZ_depth")
+calc_TE(model.name = "UKESM", DH = "PCD")
+
+calc_multimodel_avg_2(DH=100,variable = "TE")
+calc_multimodel_avg_2(DH= "MLD_max", variable = "TE")
+calc_multimodel_avg_2(DH= "EZ_depth", variable = "TE")
+calc_multimodel_avg_2(DH= "PCD", variable = "TE")
+
+calc_multimodel_avg_absolute(DH=100,variable = "TE")
+calc_multimodel_avg_absolute(DH= "MLD_max", variable = "TE")
+calc_multimodel_avg_absolute(DH= "EZ_depth", variable = "TE")
+calc_multimodel_avg_absolute(DH= "PCD", variable = "TE")
+
+calc_model_agreement(variable = "TE")
+
+#plotting TE -----------
+
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+#this function hasn't been updated since the new run of the spatial analysis
+plot_TE(model.name = "CESM", time = "his", type = "percent")
+plot_TE(model.name = "CESM", time = "lt", type = "percent")
+plot_TE(model.name = "CESM", time = "change", type = "percent")
+plot_TE(model.name = "CESM", time = "his", type = "absolute")
+plot_TE(model.name = "CESM", time = "lt", type = "absolute")
+plot_TE(model.name = "CESM", time = "change", type = "absolute")
+
+plot_TE(model.name = "CMCC", time = "his", type = "percent")
+plot_TE(model.name = "CMCC", time = "lt", type = "percent")
+plot_TE(model.name = "CMCC", time = "change", type = "percent")
+plot_TE(model.name = "CMCC", time = "his", type = "absolute")
+plot_TE(model.name = "CMCC", time = "lt", type = "absolute")
+plot_TE(model.name = "CMCC", time = "change", type = "absolute")
+
+#comment line 7 and 14 for his and change
+plot_TE(model.name = "EC-Earth", time = "his", type = "percent")
+plot_TE(model.name = "EC-Earth", time = "lt", type = "percent")
+plot_TE(model.name = "EC-Earth", time = "change", type = "percent")
+plot_TE(model.name = "EC-Earth", time = "his", type = "absolute")
+plot_TE(model.name = "EC-Earth", time = "lt", type = "absolute")
+plot_TE(model.name = "EC-Earth", time = "change", type = "absolute")
+
+plot_TE(model.name = "MPI", time = "his", type = "percent")
+plot_TE(model.name = "MPI", time = "lt", type = "percent")
+plot_TE(model.name = "MPI", time = "change", type = "percent")
+plot_TE(model.name = "MPI", time = "his", type = "absolute")
+plot_TE(model.name = "MPI", time = "lt", type = "absolute")
+plot_TE(model.name = "MPI", time = "change", type = "absolute")
+
+plot_TE(model.name = "IPSL", time = "his", type = "percent")
+plot_TE(model.name = "IPSL", time = "lt", type = "percent")
+plot_TE(model.name = "IPSL", time = "change", type = "percent")
+plot_TE(model.name = "IPSL", time = "his", type = "absolute")
+plot_TE(model.name = "IPSL", time = "lt", type = "absolute")
+plot_TE(model.name = "IPSL", time = "change", type = "absolute")
+
+plot_TE(model.name = "GFDL", time = "his", type = "percent")
+plot_TE(model.name = "GFDL", time = "lt", type = "percent")
+plot_TE(model.name = "GFDL", time = "change", type = "percent")
+plot_TE(model.name = "GFDL", time = "his", type = "absolute")
+plot_TE(model.name = "GFDL", time = "lt", type = "absolute")
+plot_TE(model.name = "GFDL", time = "change", type = "absolute")
+
+plot_TE(model.name = "UKESM", time = "his", type = "percent")
+plot_TE(model.name = "UKESM", time = "lt", type = "percent")
+plot_TE(model.name = "UKESM", time = "change", type = "percent")
+plot_TE(model.name = "UKESM", time = "his", type = "absolute")
+plot_TE(model.name = "UKESM", time = "lt", type = "absolute")
+plot_TE(model.name = "UKESM", time = "change", type = "absolute")
+
+plot_TE(model.name = "multimodel", time = "his", type = "percent")
+plot_TE(model.name = "multimodel", time = "lt", type = "percent")
+plot_TE(model.name = "multimodel", time = "change", type = "percent")
+plot_TE(model.name = "multimodel", time = "his", type = "absolute")
+plot_TE(model.name = "multimodel", time = "lt", type = "absolute")
+plot_TE(model.name = "multimodel", time = "change", type = "absolute")
+
+plot_TE_by_model(model.name = "CESM", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "CESM", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "CM4", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "CM4", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "MPI", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "MPI", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_100", type = "absolute")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_100", type = "percent")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_100", type = "absolute")
+
+plot_TE_by_model(model.name = "CESM", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "CESM", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "CM4", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "CM4", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "MPI", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "MPI", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_MLD_max", type = "absolute")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_MLD_max", type = "percent")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_MLD_max", type = "absolute")
+
+plot_TE_by_model(model.name = "CESM", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "CESM", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "CM4", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "CM4", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "MPI", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "MPI", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_EZ_depth", type = "absolute")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_EZ_depth", type = "percent")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_EZ_depth", type = "absolute")
+
+plot_TE_by_model(model.name = "CESM", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "CESM", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "CM4", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "CM4", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "CMCC", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "EC-Earth", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "GFDL", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "IPSL", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "MPI", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "MPI", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "UKESM", variable = "POC_PCD", type = "absolute")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_PCD", type = "percent")
+plot_TE_by_model(model.name = "multimodel", variable = "POC_PCD", type = "absolute")
+
+
+
+```
+
+10. Calculate historical, long-term, and change in e-ratio at each depth horizon
+```{r}
+
+setwd("~/spatial_analysis/code/")
+source("rg_calc_TE_e-ratio.R")
+source("rg_plot_e_ratio.R")
+source("calc_multimodel_avg.R")
+
+#calculate e-ratio --------
+
+models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM")
+
+lapply(models, calc_e_ratio, DH = "PCD")
+lapply(models, calc_e_ratio, DH = "100")
+lapply(models, calc_e_ratio, DH = "MLD_max")
+lapply(models, calc_e_ratio, DH = "1000")
+lapply(models, calc_e_ratio, DH = "EZ_depth")
+
+calc_e_ratio(model.name = "CESM", DH = "100")
+calc_e_ratio(model.name = "CESM", DH = "MLD_max")
+calc_e_ratio(model.name = "CESM", DH = "EZ_depth")
+calc_e_ratio(model.name = "CESM", DH = "1000")
+
+calc_e_ratio(model.name = "CM4", DH = "100")
+calc_e_ratio(model.name = "CM4", DH = "MLD_max")
+calc_e_ratio(model.name = "CM4", DH = "EZ_depth")
+calc_e_ratio(model.name = "CM4", DH = "1000")
+
+calc_e_ratio(model.name = "CMCC", DH = "100")
+calc_e_ratio(model.name = "CMCC", DH = "MLD_max")
+calc_e_ratio(model.name = "CMCC", DH = "EZ_depth")
+calc_e_ratio(model.name = "CMCC", DH = "1000")
+
+calc_e_ratio(model.name = "EC-Earth", DH = "100")
+calc_e_ratio(model.name = "EC-Earth", DH = "MLD_max")
+calc_e_ratio(model.name = "EC-Earth", DH = "EZ_depth")
+calc_e_ratio(model.name = "EC-Earth", DH = "1000")
+
+calc_e_ratio(model.name = "GFDL", DH = "100")
+calc_e_ratio(model.name = "GFDL", DH = "MLD_max")
+calc_e_ratio(model.name = "GFDL", DH = "EZ_depth")
+calc_e_ratio(model.name = "GFDL", DH = "1000")
+
+calc_e_ratio(model.name = "IPSL", DH = "100")
+calc_e_ratio(model.name = "IPSL", DH = "MLD_max")
+calc_e_ratio(model.name = "IPSL", DH = "EZ_depth")
+calc_e_ratio(model.name = "IPSL", DH = "1000")
+
+calc_e_ratio(model.name = "MPI", DH = "100")
+calc_e_ratio(model.name = "MPI", DH = "MLD_max")
+calc_e_ratio(model.name = "MPI", DH = "EZ_depth")
+calc_e_ratio(model.name = "MPI", DH = "1000")
+
+calc_e_ratio(model.name = "UKESM", DH = "100")
+calc_e_ratio(model.name = "UKESM", DH = "MLD_max")
+calc_e_ratio(model.name = "UKESM", DH = "EZ_depth")
+calc_e_ratio(model.name = "UKESM", DH = "1000")
+
+calc_multimodel_avg_2(DH=100,variable = "e_ratio")
+calc_multimodel_avg_2(DH= "MLD_max", variable = "e_ratio")
+calc_multimodel_avg_2(DH= "EZ_depth", variable = "e_ratio")
+calc_multimodel_avg_2(DH="PCD",variable = "e_ratio")
+calc_multimodel_avg_2(DH=1000,variable = "e_ratio")
+
+#plotting --------
+
+#download/load land shapefile
+  land <- ne_download(scale = 50, type = 'land', category = 'physical')
+  world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+
+  
+plot_e_ratio(model.name = "CESM", DH = "100")
+plot_e_ratio(model.name = "CESM", DH = "MLD_max")
+plot_e_ratio(model.name = "CESM", DH = "EZ_depth")
+plot_e_ratio(model.name = "CESM", DH = "PCD")
+plot_e_ratio(model.name = "CESM", DH = "1000")
+
+plot_e_ratio(model.name = "CM4", DH = "100")
+plot_e_ratio(model.name = "CM4", DH = "MLD_max")
+plot_e_ratio(model.name = "CM4", DH = "EZ_depth")
+plot_e_ratio(model.name = "CM4", DH = "PCD")
+plot_e_ratio(model.name = "CM4", DH = "1000")
+
+plot_e_ratio(model.name = "CMCC", DH = "100")
+plot_e_ratio(model.name = "CMCC", DH = "MLD_max")
+plot_e_ratio(model.name = "CMCC", DH = "EZ_depth")
+plot_e_ratio(model.name = "CMCC", DH = "PCD")
+plot_e_ratio(model.name = "CMCC", DH = "1000")
+
+plot_e_ratio(model.name = "EC-Earth", DH = "100")
+plot_e_ratio(model.name = "EC-Earth", DH = "MLD_max")
+plot_e_ratio(model.name = "EC-Earth", DH = "EZ_depth")
+plot_e_ratio(model.name = "EC-Earth", DH = "PCD")
+plot_e_ratio(model.name = "EC-Earth", DH = "1000")
+
+plot_e_ratio(model.name = "GFDL", DH = "100")
+plot_e_ratio(model.name = "GFDL", DH = "MLD_max")
+plot_e_ratio(model.name = "GFDL", DH = "EZ_depth")
+plot_e_ratio(model.name = "GFDL", DH = "PCD")
+plot_e_ratio(model.name = "GFDL", DH = "1000")
+
+plot_e_ratio(model.name = "IPSL", DH = "100")
+plot_e_ratio(model.name = "IPSL", DH = "MLD_max")
+plot_e_ratio(model.name = "IPSL", DH = "EZ_depth")
+plot_e_ratio(model.name = "IPSL", DH = "PCD")
+plot_e_ratio(model.name = "IPSL", DH = "1000")
+
+plot_e_ratio(model.name = "MPI", DH = "100")
+plot_e_ratio(model.name = "MPI", DH = "MLD_max")
+plot_e_ratio(model.name = "MPI", DH = "EZ_depth")
+plot_e_ratio(model.name = "MPI", DH = "PCD")
+plot_e_ratio(model.name = "MPI", DH = "1000")
+
+plot_e_ratio(model.name = "UKESM", DH = "100")
+plot_e_ratio(model.name = "UKESM", DH = "MLD_max")
+plot_e_ratio(model.name = "UKESM", DH = "EZ_depth")
+plot_e_ratio(model.name = "UKESM", DH = "PCD")
+plot_e_ratio(model.name = "UKESM", DH = "1000")
+
+plot_e_ratio(model.name = "multimodel", DH = "100")
+plot_e_ratio(model.name = "multimodel", DH = "MLD_max")
+plot_e_ratio(model.name = "multimodel", DH = "EZ_depth")
+plot_e_ratio(model.name = "multimodel", DH = "PCD")
+plot_e_ratio(model.name = "multimodel", DH = "1000")
+
+
+```
+
+11. Calculate model agreement on the sign of variable change
+- this was already done in earlier steps, but I'm summarizing everything here
+```{r}
+
+setwd("~/spatial_analysis/code/")
+source("calc_model_agreement.R")
+source("plot_model_agreement.R")
+
+#download/load land shapefile
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+calc_model_agreement(variable = "POC_100")
+calc_model_agreement(variable = "POC_EZ_depth")
+calc_model_agreement(variable = "POC_MLD_max")
+calc_model_agreement(variable = "POC_1000")
+calc_model_agreement(variable = "POC_PCD")
+calc_model_agreement(variable = "MLD_max")
+calc_model_agreement(variable = "NPP")
+calc_model_agreement(variable = "PCD")
+calc_model_agreement(variable = "EZ_depth")
+calc_model_agreement(variable = "all_DH")
+calc_model_agreement(variable = "POC_100_EZ_depth")
+calc_model_agreement(variable = "POC_100_MLD_max")
+calc_model_agreement(variable = "POC_100_1000")
+calc_model_agreement(variable = "POC_100_PCD")
+calc_model_agreement(variable = "POC_shallow_DHs")
+calc_model_agreement(variable = "e_ratio") #100 m
+calc_model_agreement(variable = "TE") #100 m
+
+
+plot_model_agreement(variable = "POC_100")
+plot_model_agreement(variable = "POC_EZ_depth")
+plot_model_agreement(variable = "POC_MLD_max")
+plot_model_agreement(variable = "POC_1000")
+plot_model_agreement(variable = "POC_PCD")
+plot_model_agreement(variable = "MLD_max")
+plot_model_agreement(variable = "NPP")
+plot_model_agreement(variable = "PCD")
+plot_model_agreement(variable = "EZ_depth")
+
+
+```
+
+
+12. Assess differences in POC flux between 100m and EZ depth, PCD, and MLDmax 
+```{r}
+
+setwd("~/spatial_analysis/code/")
+source("DH_differences_assessment.R")
+
+
+
+#download/load land shapefile
+land <- ne_download(scale = 50, type = 'land', category = 'physical')
+world <- ne_load(scale = 50, type = 'land', category = 'physical', returnclass = "sf")
+
+
+models = c("CESM", "CM4", "CMCC", "GFDL", "IPSL", "MPI", "UKESM", "multimodel")
+lapply(models, plot_POC_DH_diff, DH = "EZ_depth")
+models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM", "multimodel")
+lapply(models, plot_POC_DH_diff, DH = "MLDmax")
+lapply(models, plot_POC_DH_diff, DH = "PCD")
+
+plot_POC_DH_diff("multimodel", "EZ_depth")
+plot_POC_DH_diff("multimodel", "MLDmax")
+plot_POC_DH_diff("multimodel", "PCD")
+
+setwd("~/spatial_analysis/figures/POC_DH_differences/")
+A <- readPNG('multimodel_POC_EZ_depth_POC_100_differences.png')
+B <- readPNG('multimodel_POC_PCD_POC_100_differences.png')
+C <- readPNG('multimodel_POC_MLDmax_POC_100_differences.png')
+
+grid.combine <- grid.arrange(rasterGrob(A),rasterGrob(B),rasterGrob(C), ncol=1, nrow=3)
+
+ggsave(paste("multimodel_POC_DH_differences.png",sep=""), plot = grid.combine, path = "~/spatial_analysis/figures/POC_DH_differences/", width = 30, height = 20, units = "cm", dpi = 400)
+
+```
+
+Plotting Robinson projections 
+```{r}
+
+models = c("CESM", "CM4", "CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM", "multimodel")
+
+lapply(models, plot_POC_robinson, variable = "POC_100")
+lapply(models, plot_POC_robinson, variable = "POC_MLD_max")
+
+plot_POC_robinson(variable = "POC_100", model.name = "multimodel")
+
+```
+

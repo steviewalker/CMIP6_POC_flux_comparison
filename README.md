@@ -1,5 +1,5 @@
 # CMIP6_POC_flux_comparison
-Multimodel comparison of POC flux changes across multiple export depth horizons in CMIP6 ESMs, code written by Stevie Walker, 2020-2023
+Multimodel comparison of POC flux changes across multiple export depth horizons in CMIP6 ESMs, code written by Stevie Walker, 2020-2025
 
 This readme file is organized into four sections -  1. ESM file download and prep, 2. time series analysis, 3. spatial maps analysis, 4. regional time series analysis - with brief descriptions of each script. All code is described further and organized in the order you should run it in the .Rmd files. paper_figs.R: plots all figures in the manuscript.
 
@@ -27,11 +27,14 @@ TIME SERIES ANALYSIS
 4. calc_time_series_expc.R: calculates POC flux time series at MLDmax, PCD, and 1000 m for all models except UKESM, and 100 m for CM4, requires MLDmax arrays from calc_time_series_MLDmax.R
 5. calc_time_series_expc_UKESM.R: calculates POC flux time series at MLDmax, PCD, EZ depth, and 1000 m for UKESM, be sure to combine the time series after
 6. calc_time_series_ez_depth.R: calculates EZ depth matrices for every year and every model to be used in POC flux EZ depth time series
-7. calc_time_series_expc_ez.R: calculates POC flux time series at EZ depth for all models except UKESM
-8. calc_time_series_npp.R: calculates column integrated NPP time series in all models except UKESM
-9. calc_time_series_npp_UKESM.R: calculates column integrated NPP time series for UKESM
-10. plot_time_series.R: calculates TE and e-ratio and saves dataframes, plots absolute and normalized time series for all variables
-11. plot_time_series_absolute.R: plots normalized absolute time series for all variables
+7. calc_time_series_ez_depth_10percent.R: calculates EZ depth matrices for every year and every model using the 10% NPPmax definition to be used in POC flux EZ depth time series
+8. calc_time_series_expc_ez.R: calculates POC flux time series at EZ depth for all models except UKESM
+9. calc_time_series_npp.R: calculates column integrated NPP time series in all models except UKESM
+10. calc_time_series_npp_UKESM.R: calculates column integrated NPP time series for UKESM
+11. plot_time_series.R: calculates TE and e-ratio and saves dataframes, plots absolute and normalized time series for all variables
+12. plot_time_series_absolute.R: plots normalized absolute time series for all variables
+13. calc_PCD_global_depth_avg.R: source function for step 14
+14. calc_DH_avg_table.R: calculates historical and long-term globally integrated average depth horizon depth for EZ depth (1% or 10% NPPmax), PCD, and MLDmax. Uses function in calc_PCD_global_depth_avg.R
 
 
 SPATIAL MAPS ANALYSIS

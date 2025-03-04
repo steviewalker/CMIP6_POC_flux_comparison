@@ -55,6 +55,16 @@ time_series_expc_UKESM <- function(DH, file) {
       interp.array <- readRDS("~/time_series_analysis/files/EZ_depth/UKESM_ez_depth_fut_time_series.Rds")
       interp.array = interp.array[,,36:86]
     }
+  } else if(DH == "ez_depth_10") {
+    if(file == 1 || file == 2 || file == 3 || file == 4) {
+      interp.array <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/ten_percent/UKESM_",file,"_ez_depth_10_his_time_series.Rds"))
+    } else if(file == 5){
+      interp.array <- readRDS("~/time_series_analysis/files/EZ_depth/ten_percent/UKESM_ez_depth_10_fut_time_series.Rds")
+      interp.array = interp.array[,,1:35]
+    } else {
+      interp.array <- readRDS("~/time_series_analysis/files/EZ_depth/ten_percent/UKESM_ez_depth_10_fut_time_series.Rds")
+      interp.array = interp.array[,,36:86]
+    }
   } else {
     #read in one array for the NA test later on in the code
     interp.array <- readRDS("~/time_series_analysis/files/MLDmax/UKESM_MLD_his_time_series.Rds")
@@ -164,6 +174,8 @@ time_series_expc_UKESM <- function(DH, file) {
     write.csv(df,paste0("~/time_series_analysis/files/POC_MLDmax/UKESM_uncombined/UKESM_",file,"_time_series_expc_MLDmax.csv"))
   } else if(DH == "ez_depth") {
     write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/UKESM_uncombined/UKESM_",file,"_time_series_expc_ez.csv"))
+  } else if(DH == "ez_depth_10") {
+    write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/UKESM_uncombined/UKESM_",file,"_time_series_expc_ez_10.csv"))
   } else if(DH == "PCD") {
     write.csv(df,paste0("~/time_series_analysis/files/POC_PCD/UKESM_uncombined/UKESM_",file,"_time_series_expc_PCD.csv"))
   } else {

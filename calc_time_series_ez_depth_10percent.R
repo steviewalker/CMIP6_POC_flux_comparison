@@ -1,6 +1,6 @@
 #' @title Calculate yearly euphotic zone depth for historical and future data
 #' @author Stevie Walker
-#' @date 4/4/22
+#' @date 3/3/25
 #' @description finds ez depth for every grid cell in every year from 1850-2100, to be used in time series calculation
 #' @description EZ depth definition for. CM4 is 10% NPP max, using calc_time_series_ez_depth_10.R for supplemental metric sensitivity analysis
 #' @input npp nc files
@@ -11,12 +11,12 @@
 #lon.length = 1:320
 #lat.length = 1:384
 
-time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file) {
+time_series_ez_depth_10 <- function(model.name, lon.length, lat.length, UKESM.file) {
   
   # Open files ---------
   
   setwd(paste0("~/senior_thesis/combined_",model.name,"_files"))
-  nc.pp <- list.files(pattern = "pp")
+  nc.pp <- list.files(pattern = "^pp")
   
   #EC-Earth exception because it's missing historical data
   if(model.name == "EC-Earth") {
@@ -29,6 +29,8 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
   
   if(model.name == "UKESM") {
     nc_fut <- nc_open(nc.pp[UKESM.file])
+  } else if(model.name == "EC-Earth") {
+    nc_fut <- nc_open(nc.pp[1])
   } else {
     nc_fut <- nc_open(nc.pp[2])
   }
@@ -97,11 +99,11 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
             profile = profile %>% 
               filter(!duplicated(npp))
             
-            #finds one or five percent of max npp, 10% for CM4
+            #finds 10% of max npp, 1% for CM4
             if(model.name == "CM4") {
-              one.percent = max(profile$npp,na.rm = TRUE)*0.1
-            } else {
               one.percent = max(profile$npp,na.rm = TRUE)*0.01
+            } else {
+              one.percent = max(profile$npp,na.rm = TRUE)*0.1
               #one.percent = max(profile$npp,na.rm = TRUE)*0.05
             }
             
@@ -113,8 +115,8 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
             ret$test <- extract(pp[, , 2], indices = c(i,j), dims = c(1,2))
             
           } else {
-            #finds one percent of max npp
-            ret$one.percent = max(ret$npp,na.rm = TRUE)*0.01
+            #finds 10 percent of max npp
+            ret$one.percent = max(ret$npp,na.rm = TRUE)*0.1
             #finds five percent of max npp
             #ret$one.percent = max(ret$npp,na.rm = TRUE)*0.05
             #true/false test (pulls out second depth value)
@@ -156,8 +158,8 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
     ez_fut <- array(ez_fut, dim=c(dim(list_ez[[1]]), length(list_ez)))
     
     #save non-averaged arrays for time series
-    setwd("~/time_series_analysis/files/EZ_depth/")
-    saveRDS(ez_fut, file = paste(model.name,"_ez_depth_fut_time_series.Rds",sep=""), ascii = TRUE)
+    setwd("~/time_series_analysis/files/EZ_depth/ten_percent/")
+    saveRDS(ez_fut, file = paste(model.name,"_ez_depth_10_fut_time_series.Rds",sep=""), ascii = TRUE)
     
   }
   
@@ -232,11 +234,11 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
             profile = profile %>% 
               filter(!duplicated(npp))
             
-            #finds one or five percent of max npp, 10% for CM4
+            #finds 10 percent of max npp, 1% for CM4
             if(model.name == "CM4") {
-              one.percent = max(profile$npp,na.rm = TRUE)*0.1
-            } else {
               one.percent = max(profile$npp,na.rm = TRUE)*0.01
+            } else {
+              one.percent = max(profile$npp,na.rm = TRUE)*0.1
               #one.percent = max(profile$npp,na.rm = TRUE)*0.05
             }
             
@@ -249,8 +251,8 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
             
           } else {
             
-            #finds one percent of max npp
-            ret$one.percent = max(ret$npp,na.rm = TRUE)*0.01
+            #finds 10 percent of max npp
+            ret$one.percent = max(ret$npp,na.rm = TRUE)*0.1
             #ret$one.percent = max(ret$npp,na.rm = TRUE)*0.05
             #true/false test (pulls out second depth value)
             ret$test <- extract(pp[, , 2], indices = c(i,j), dims = c(1,2))
@@ -299,13 +301,13 @@ time_series_ez_depth <- function(model.name, lon.length, lat.length, UKESM.file)
   
   if(model.name == "UKESM") {
     #save non-averaged arrays for time series
-    setwd("~/time_series_analysis/files/EZ_depth/")
+    setwd("~/time_series_analysis/files/EZ_depth/ten_percent/")
     #specify UKESM file
-    saveRDS(ez_his, file = paste(model.name,"_",UKESM.file,"_ez_depth_his_time_series.Rds",sep=""), ascii = TRUE)
+    saveRDS(ez_his, file = paste(model.name,"_",UKESM.file,"_ez_depth_10_his_time_series.Rds",sep=""), ascii = TRUE)
   } else {
     #save non-averaged arrays for time series
-    setwd("~/time_series_analysis/files/EZ_depth/")
-    saveRDS(ez_his, file = paste(model.name,"_ez_depth_his_time_series.Rds",sep=""), ascii = TRUE)
+    setwd("~/time_series_analysis/files/EZ_depth/ten_percent/")
+    saveRDS(ez_his, file = paste(model.name,"_ez_depth_10_his_time_series.Rds",sep=""), ascii = TRUE)
   }
 }
 

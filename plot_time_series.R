@@ -53,7 +53,7 @@ figure <- ggplot(data = df2, aes(x = Year, y = POC_flux_100, color = Model)) +
   geom_line() +
   geom_smooth(size = 0.5, se = FALSE) +
   theme_bw() +
-  labs(title = "Time Series Change in Global POC Flux at 100m (1850-2100)") +
+  labs(title = "Time Series Change in Global POC Flux at 100 m (1850-2100)") +
   xlab(NULL) +
   ylab("POC Flux (Pg C/yr)") +
   scale_y_continuous(n.breaks = 6) +  
@@ -416,7 +416,7 @@ figure7 <- ggplot(data = df2.npp, aes(x = Year, y = NPP, color = Model)) +
   labs(title = "Time Series Change in Global NPP (1850-2100)") +
   xlab(NULL) +
   ylab("NPP (Pg C/yr)") +
-  scale_y_continuous(n.breaks = 6) +
+  scale_y_continuous(limits = c(28,61),n.breaks = 6) +
   scale_x_continuous(expand = c(0,0)) +
   scale_color_manual(values = color) +
   theme(plot.title = element_text(size = 14),
@@ -434,24 +434,71 @@ figure7
 #save figure
 ggsave(filename = "time_series_npp.png", plot = figure7, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
 
+## 8b. TIME SERIES INTPP -------------------
+
+setwd("~/time_series_analysis/files/NPP/")
+df.npp <- list.files(pattern = "*_time_series_intpp.csv$")
+
+#create empty list for storing for loop output
+time.series2 <- list()
+
+for(i in df.npp) {
+  
+  #read in csv file
+  df.npp <- read_csv(i)
+  #get rid of random ...1 column
+  df.npp <- subset(df.npp, select = -c(...1))
+  #store into list
+  time.series2[[i]] <- df.npp
+}
+
+#join by year (2015 has a lot of repeats, but that doesn't effect later plotting)
+df.npp <- time.series2 %>% 
+  reduce(left_join, by = "Year")
+
+#add column for model key
+df2.npp <- data.table::melt(df.npp,  id.vars = 'Year', value.name = 'NPP', variable.name = "Model")
+
+#save NPP time-series data frame for all models
+write_csv(df.npp, file = "~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
+
+#plot time series at MLDmax
+figure7b <- ggplot(data = df2.npp, aes(x = Year, y = NPP, color = Model)) +
+  geom_line() +
+  geom_smooth(size = 0.5, se = FALSE) +
+  theme_bw() +
+  labs(title = "Time Series Change in Global NPP (1850-2100)") +
+  xlab(NULL) +
+  ylab("NPP (Pg C/yr)") +
+  scale_y_continuous(limits = c(28,61),n.breaks = 6) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_color_manual(values = color) +
+  theme(plot.title = element_text(size = 14),
+        plot.subtitle = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.key.size = unit(1, 'cm'), 
+        legend.key.height = unit(1, 'cm'), 
+        legend.key.width = unit(1, 'cm'), 
+        legend.title = element_text(size=14), 
+        legend.text = element_text(size=12))
+
+figure7b
+
+#save figure
+ggsave(filename = "time_series_intpp.png", plot = figure7b, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
+
 
 # 9. NORMALIZED NPP TIME SERIES ------------
 
 #read in df created for first figure
-ts.npp.all <- read_csv("~/time_series_analysis/files/all_models/time_series_npp_all.csv")
+ts.npp.all <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
 
 #calculate average for each model from 1850-1900
 mean1850_1900 <- dplyr::filter(ts.npp.all, between(Year, 1850, 1900)) %>% 
   summarise_if(is.numeric, mean, na.rm = TRUE)
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(ts.npp.all,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
 
 #need to fix year column
 normalized.npp <- 
@@ -464,6 +511,11 @@ normalized.npp <- normalized.npp %>%
   cbind(Year = c(1850:2100)) %>% 
   as_tibble() %>% 
   relocate(Year, .before = CESM) 
+
+#end of 21st century average
+mean2090_2100 = dplyr::filter(normalized.npp, between(Year, 2090, 2100)) %>% 
+  summarise_if(is.numeric, mean, na.rm = TRUE)
+mean2090_2100
 
 #add column for model key
 normalized.npp2 <- data.table::melt(normalized.npp,  id.vars = 'Year', value.name = 'NPP', variable.name = "Model")
@@ -498,6 +550,61 @@ figure8
 
 #save figure
 ggsave(filename = "normalized_time_series_npp.png", plot = figure8, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
+
+
+#read in df created for first figure
+ts.npp.all <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
+
+#calculate average for each model from 1850-1900
+mean1850_1900 <- dplyr::filter(ts.npp.all, between(Year, 1850, 1900)) %>% 
+  summarise_if(is.numeric, mean, na.rm = TRUE)
+mean1850_1900 <- subset(mean1850_1900, select = -c(1))
+
+#need to fix year column
+normalized.npp <- 
+  subset(ts.npp.all, select = -c(1))
+
+#calculate normalized POC flux
+normalized.npp <- mapply('/', normalized.npp, mean1850_1900)*100
+
+normalized.npp <- normalized.npp %>% 
+  cbind(Year = c(1850:2100)) %>% 
+  as_tibble() %>% 
+  relocate(Year, .before = CESM) 
+
+#add column for model key
+normalized.npp2 <- data.table::melt(normalized.npp,  id.vars = 'Year', value.name = 'NPP', variable.name = "Model")
+
+
+#save df
+write_csv(normalized.npp, "~/time_series_analysis/files/all_models/normalized_time_series_intpp.csv")
+
+
+#plot NPP time series
+figure8 <- ggplot(data = normalized.npp2, aes(x = Year, y = NPP, color = Model)) +
+  geom_line() +
+  geom_smooth(size = 0.5, se = FALSE) +
+  theme_bw() +
+  labs(title = "Normalized Time Series Change in Global NPP (1850-2100)") +
+  xlab(NULL) +
+  ylab("NPP (Pg C/yr)") +
+  scale_y_continuous(n.breaks = 6) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_color_manual(values = color) +
+  theme(plot.title = element_text(size = 14),
+        plot.subtitle = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.key.size = unit(1, 'cm'), 
+        legend.key.height = unit(1, 'cm'), 
+        legend.key.width = unit(1, 'cm'), 
+        legend.title = element_text(size=14), 
+        legend.text = element_text(size=12))
+
+figure8
+
+#save figure
+ggsave(filename = "normalized_time_series_intpp.png", plot = figure8, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
 
 
 # 10a. TRANSFER EFFICIENCY TIME SERIES 100m to 1000m -----------
@@ -724,6 +831,11 @@ normalized.te <- normalized.te %>%
   cbind(Year = c(1850:2100)) %>% 
   as_tibble() %>% 
   relocate(Year, .before = CESM) 
+
+#end of 21st century average
+mean2090_2100 = dplyr::filter(normalized.te, between(Year, 2090, 2100)) %>% 
+  summarise_if(is.numeric, mean, na.rm = TRUE)
+100 - mean2090_2100
 
 #save df
 write_csv(normalized.te, "~/time_series_analysis/files/all_models/normalized_TE_time_series_100_1000.csv")
@@ -1176,7 +1288,7 @@ ggsave(filename = "absolute_time_series_PCD_1000_TE.png", plot = figure11h, path
 # 12. E-RATIO AT 100M TIME SERIES ---------------
 
 epc100 <- read_csv("~/time_series_analysis/files/all_models/time_series_epc100_all.csv")
-npp <- read_csv("~/time_series_analysis/files/all_models/time_series_npp_all.csv")
+npp <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
 
 epc100 <- 
   subset(epc100, select = -c(1))
@@ -1234,14 +1346,6 @@ mean1850_1900 <- dplyr::filter(e_ratio_100, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio_100,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
 #take away year again for second round of calculations
 normalized_e_ratio_100 <- 
   subset(e_ratio_100, select = -c(1))
@@ -1254,6 +1358,11 @@ normalized_e_ratio_100 <- normalized_e_ratio_100 %>%
   cbind(Year = c(1850:2100)) %>% 
   as_tibble() %>% 
   relocate(Year, .before = CESM) 
+
+#end of 21st century average
+mean2090_2100 = dplyr::filter(normalized_e_ratio_100, between(Year, 2090, 2100)) %>% 
+  summarise_if(is.numeric, mean, na.rm = TRUE)
+100 - mean2090_2100
 
 write_csv(normalized_e_ratio_100, "~/time_series_analysis/files/all_models/normalized_time_series_e_ratio_100.csv")
 
@@ -1290,7 +1399,7 @@ ggsave(filename = "normalized_time_series_e_ratio_100.png", plot = figure13, pat
 
 # 14. E-RATIO AT MLDMAX TIME SERIES ---------------
 
-npp <- read_csv("~/time_series_analysis/files/all_models/time_series_npp_all.csv")
+npp <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
 expc <- read_csv("~/time_series_analysis/files/all_models/time_series_expc_MLDmax_all.csv")
 
 npp <-
@@ -1349,15 +1458,6 @@ mean1850_1900 <- dplyr::filter(e_ratio_MLDmax, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio_MLDmax,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
-
 #take away year again for second round of calculations
 normalized_e_ratio_MLDmax <- 
   subset(e_ratio_MLDmax, select = -c(1))
@@ -1405,7 +1505,7 @@ ggsave(filename = "normalized_time_series_e_ratio_MLDmax.png", plot = figure15, 
 
 # 16. E-RATIO AT 1000m TIME SERIES ---------------
 
-npp <- read_csv("~/time_series_analysis/files/all_models/time_series_npp_all.csv")
+npp <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
 expc_1000 <- read_csv("~/time_series_analysis/files/all_models/time_series_expc_1000_all.csv")
 
 npp <-
@@ -1463,14 +1563,6 @@ mean1850_1900 <- dplyr::filter(e_ratio_1000, between(Year, 1850, 1900)) %>%
   summarise_if(is.numeric, mean, na.rm = TRUE)
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
-
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio_1000,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
 
 #take away year again for second round of calculations
 normalized_e_ratio_1000 <- 
@@ -2417,7 +2509,7 @@ ggsave(filename = "normalized_time_series_POC_PCD.png", plot = figure32, path = 
 
 # 33. E-RATIO AT PCD TIME SERIES ---------------
 
-npp <- read_csv("~/time_series_analysis/files/all_models/time_series_npp_all.csv")
+npp <- read_csv("~/time_series_analysis/files/all_models/time_series_intpp_all.csv")
 expc_1000 <- read_csv("~/time_series_analysis/files/all_models/time_series_expc_PCD_all.csv")
 
 npp <-
@@ -2477,14 +2569,6 @@ mean1850_1900 <- dplyr::filter(e_ratio_1000, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio_1000,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
 #take away year again for second round of calculations
 normalized_e_ratio_1000 <- 
   subset(e_ratio_1000, select = -c(1))
@@ -2542,13 +2626,6 @@ mean1850_1900 <- dplyr::filter(e_ratio, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
 
 #take away year again for second round of calculations
 absolute.erat <- 
@@ -2605,14 +2682,6 @@ mean1850_1900 <- dplyr::filter(e_ratio, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
 #take away year again for second round of calculations
 absolute.erat <- 
   subset(e_ratio, select = -c(1))
@@ -2667,14 +2736,6 @@ mean1850_1900 <- dplyr::filter(e_ratio, between(Year, 1850, 1900)) %>%
   summarise_if(is.numeric, mean, na.rm = TRUE)
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
-
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
 
 #take away year again for second round of calculations
 absolute.erat <- 
@@ -2731,14 +2792,6 @@ mean1850_1900 <- dplyr::filter(e_ratio, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
 #take away year again for second round of calculations
 absolute.erat <- 
   subset(e_ratio, select = -c(1))
@@ -2794,14 +2847,6 @@ mean1850_1900 <- dplyr::filter(e_ratio, between(Year, 1850, 1900)) %>%
 
 mean1850_1900 <- subset(mean1850_1900, select = -c(1))
 
-#EC-Earth is normalized around 2015-2035 because it is missing historical data
-meanEC_Earth <- dplyr::filter(e_ratio,between(Year,2015,2035)) %>%
-  summarise_if(is.numeric, mean, na.rm = TRUE)
-meanEC_Earth <- subset(meanEC_Earth, select = c(5))
-
-#replace NA EC-Earth value
-mean1850_1900[c(4)] <- c(meanEC_Earth)
-
 #take away year again for second round of calculations
 absolute.erat <- 
   subset(e_ratio, select = -c(1))
@@ -2846,3 +2891,77 @@ figure35e
 
 #save figure
 ggsave(filename = "absolute_time_series_e_ratio_1000.png", plot = figure35e, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
+
+## GFDL-CM4 depth horizon differences ------------
+
+## 1. TIME SERIES AT 100m ---------------
+
+setwd("~/time_series_analysis/files/POC_100/")
+df.sep <- list.files(pattern = "*CM4")
+
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in df.sep) {
+  
+  #read in csv file
+  df <- read_csv(i)
+  #get rid of random ...1 column
+  df <- subset(df, select = -c(...1))
+  #store into list
+  time.series[[i]] <- df
+}
+
+#read in csv file
+df <- read_csv("~/time_series_analysis/files/POC_PCD/CM4_time_series_expc_PCD.csv")
+#get rid of random ...1 column
+df <- subset(df, select = -c(...1))
+#store into list
+time.series[[5]] <- df
+
+#read in csv file
+df <- read_csv("~/time_series_analysis/files/POC_EZ/CM4_time_series_expc_ez.csv")
+#get rid of random ...1 column
+df <- subset(df, select = -c(...1))
+#store into list
+time.series[[6]] <- df
+
+#join by year (2015 has a lot of repeats, but that doesn't effect later plotting)
+df <- time.series %>% 
+  reduce(left_join, by = "Year")
+
+colnames(df) <- c("Year", "112.5 m","62.5 m","87.5 m","100 m" ,"PCD", "EZ Depth")
+
+#save POC flux at 100m time-series data frame for all models
+write_csv(df, file = "~/time_series_analysis/files/all_models/CM4_DH_diffs.csv")
+
+#add column for model key (reformatting data specific to the below plot)
+df2 <- data.table::melt(df,  id.vars = 'Year', value.name = 'POC_flux_100', variable.name = 'Depth_Horizon')
+
+#plot time series at 100m
+figure <- ggplot(data = df2, aes(x = Year, y = POC_flux_100, color = Depth_Horizon)) +
+  geom_line() +
+  geom_smooth(size = 0.5, se = FALSE) +
+  theme_bw() +
+  labs(title = "GFDL-CM4 POC Flux Depth Horizon Comparison (1850-2100)") +
+  xlab(NULL) +
+  ylab("POC Flux (Pg C/yr)") +
+  scale_y_continuous(n.breaks = 6) +  
+  scale_color_manual(values = color3) +
+  scale_x_continuous(expand = c(0,0)) +
+  theme(plot.title = element_text(size = 14),
+        plot.subtitle = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.key.size = unit(1, 'cm'), 
+        legend.key.height = unit(1, 'cm'), 
+        legend.key.width = unit(1, 'cm'), 
+        legend.title = element_text(size=14), 
+        legend.text = element_text(size=12))
+
+figure
+
+#save figure
+ggsave(filename = "time_series_CM4_DH.png", plot = figure, path = "~/time_series_analysis/figures/", width = 20, height = 12, units = "cm", dpi = 400)
+
+

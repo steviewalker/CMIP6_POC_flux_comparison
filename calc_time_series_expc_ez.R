@@ -5,7 +5,7 @@
 #' @output csv file of year and global POC flux for each year
 #' @note UKESM expc ez depth function is located in calc_time_series_expc.R
 
-time_series_expc_ez <- function(model.name, lon.length, lat.length) {
+time_series_expc_ez <- function(model.name, lon.length, lat.length, ez.metric) {
   
   ## Calculate globally integrated POC flux at ez depth
   
@@ -18,8 +18,12 @@ time_series_expc_ez <- function(model.name, lon.length, lat.length) {
     
     #read in POC flux data, ez depth arrays calculated in calc_time_series_ez_depth.R
     nc_data_2015 <- nc_open(nc.expc[2])
-    ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_fut_time_series.Rds"))
-    
+    if (ez.metric == 1) {
+      ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_fut_time_series.Rds"))
+    } else {
+      #read in 10% NPP max file
+      ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/ten_percent/",model.name,"_ez_depth_10_fut_time_series.Rds"))
+    }
     #read in ocean cell area data
     nc_data_area <- nc_open(area[2])
     area <- ncvar_get(nc_data_area, "areacello")
@@ -89,7 +93,11 @@ time_series_expc_ez <- function(model.name, lon.length, lat.length) {
     df = data.frame(df.fut) # this name will get replaced to time.series
     #change column names for merging csv files later
     colnames(df) = c('Year',model.name)
-    write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez.csv"))
+    if (ez.metric == 1) {
+      write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez.csv"))
+    } else {
+      write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez_10.csv"))
+    }
     
     #for the rest of the models
   } else {
@@ -113,9 +121,13 @@ time_series_expc_ez <- function(model.name, lon.length, lat.length) {
     area <- ncvar_get(nc_data_area, "areacello")
     
     #read in ez depth arrays calculated in calc_time_series_ez_depth.R
-    ez_depth_his <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_his_time_series.Rds"))
-    ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_fut_time_series.Rds"))
-    
+    if(ez.metric == 1) {
+      ez_depth_his <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_his_time_series.Rds"))
+      ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/",model.name,"_ez_depth_fut_time_series.Rds"))
+    } else {
+      ez_depth_his <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/ten_percent/",model.name,"_ez_depth_10_his_time_series.Rds"))
+      ez_depth_fut <- readRDS(paste0("~/time_series_analysis/files/EZ_depth/ten_percent/",model.name,"_ez_depth_10_fut_time_series.Rds"))
+    }
     
     dims = dim(ez_depth_fut)
     
@@ -280,8 +292,11 @@ time_series_expc_ez <- function(model.name, lon.length, lat.length) {
     df = data.frame(time.series)
     #change column names for merging csv files later
     colnames(df) = c('Year',model.name)
-    write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez.csv"))
-    
+    if (ez.metric == 1) {
+      write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez.csv"))
+    } else {
+      write.csv(df,paste0("~/time_series_analysis/files/POC_EZ/",model.name,"_time_series_expc_ez_10.csv"))
+    }
   }
   
 }

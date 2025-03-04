@@ -4,10 +4,20 @@
 #' @inputs expc nc file, areacello nc file, MLDmax time series arrays (historical and future for all inputs)
 #' @output csv file of year and global POC flux for each year
 
-#model.name = "CESM"
-#lon.length = 1:320
-#lat.length = 1:384
-#DH = "MLDmax"
+#model.name = "CM4"
+#lon.length = 1:360
+#lat.length = 1:180
+#DH = 100
+
+#time_series_expc(model.name = "CM4",
+#                 lon.length = 1:360,
+#                 lat.length = 1:180,
+#                 DH = 100)
+
+#add this line when calculating CM4 POC flux at different depth levels (you can also just change the DH function input to the depth you want, probably easier!)
+#else if(DH == 100 && model.name == "CM4") {
+#  output_fut[i,j] = ret$expc[6] # I changed these individually to test out the different depths, 8 = 112.5 m, 7 = 87.5 m, 6 = 62.5 m
+#}
 
 time_series_expc <- function(model.name, lon.length, lat.length, DH) {
   
@@ -21,6 +31,7 @@ time_series_expc <- function(model.name, lon.length, lat.length, DH) {
   area.name <- list.files(pattern = "areacello")
   nc_data_area <- nc_open(area.name)
   area <- ncvar_get(nc_data_area, "areacello")
+  area[area == 0] <- NA
   
   #read in MLDmax arrays
   MLD.fut <- readRDS(paste0("~/time_series_analysis/files/MLDmax/",model.name,"_MLD_fut_time_series.Rds"))
@@ -92,8 +103,8 @@ time_series_expc <- function(model.name, lon.length, lat.length, DH) {
           #just assign the max POC flux for this depth horizon, skip interpolation
           if(DH == "PCD") {
             output_fut[i,j] = max(ret$expc, na.rm = TRUE)
-          } else {
-            #find interpolated expc at mld max
+          }  else {
+            #find linearly interpolated expc
             interp <- approx(x = ret$depth, y  = ret$expc, xout = ret$DH)
             #store interpolated POC flux into the output matrix
             output_fut[i, j] <- interp$y[1]
@@ -111,7 +122,7 @@ time_series_expc <- function(model.name, lon.length, lat.length, DH) {
     #sum of all model cells
     sum_flux <- sum(global_flux, na.rm = TRUE)
     
-    #Total global POC flux in Pt C / yr for one year
+    #Total global POC flux in Pg C / yr for one year
     sum_flux <- sum_flux*12.01/1000000000000000
     
     #assign globally integrated POC flux value from t year to the output vector
@@ -190,7 +201,7 @@ time_series_expc <- function(model.name, lon.length, lat.length, DH) {
           if(DH == "PCD") {
             output_his[i,j] = max(ret$expc, na.rm = TRUE)
           } else {
-            #find interpolated expc at mld max
+            #find linearly interpolated expc
             interp <- approx(x = ret$depth, y  = ret$expc, xout = ret$DH)
             #store interpolated POC flux into the output matrix
             output_his[i, j] <- interp$y[1]

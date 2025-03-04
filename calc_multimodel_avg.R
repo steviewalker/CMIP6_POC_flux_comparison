@@ -94,3 +94,23 @@ calc_multimodel_avg_absolute <- function(DH,variable) {
   writeRaster(multimodel_mean, filename = paste0("~/spatial_analysis/raster_output/",variable,"/multimodel_POC_",DH,"_",variable,"_lt_absolute_rg.asc"), varname = variable, overwrite = TRUE)
   
 }
+
+
+calc_multimodel_avg_NPP <- function(variable) {
+  
+  change <- list.files(paste0("~/spatial_analysis/raster_output/NPP"), full.names = TRUE, pattern = paste0("_",variable, "_change_rg.asc"))
+  #exception for CM4, which uses 10% NPP max definition
+  all_files <- stack(change)
+  multimodel_mean <- calc(all_files, mean, na.rm = TRUE)
+  writeRaster(multimodel_mean, filename = paste0("~/spatial_analysis/raster_output/NPP/multimodel_",variable,"_change_rg.asc"), varname = varname, overwrite = TRUE)
+  
+  his <- list.files(paste0("~/spatial_analysis/raster_output/NPP"), full.names = TRUE, pattern = paste0("_",variable, "_his_rg.asc"))
+  all_files <- stack(his)
+  multimodel_mean <- calc(all_files, mean, na.rm = TRUE)
+  writeRaster(multimodel_mean, filename = paste0("~/spatial_analysis/raster_output/NPP/multimodel_",variable,"_his_rg.asc"), varname = varname, overwrite = TRUE)
+  
+  lt <- list.files(paste0("~/spatial_analysis/raster_output/NPP"), full.names = TRUE, pattern = paste0("_",variable, "_lt_rg.asc"))
+  all_files <- stack(lt)
+  multimodel_mean <- calc(all_files, mean, na.rm = TRUE)
+  writeRaster(multimodel_mean, filename = paste0("~/spatial_analysis/raster_output/NPP/multimodel_",variable,"_lt_rg.asc"), varname = varname, overwrite = TRUE)
+}

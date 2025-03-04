@@ -167,7 +167,50 @@ calc_model_agreement <- function(variable) {
      
      writeRaster(match_7, paste0("~/spatial_analysis/raster_output/model_agreement/",variable,"_7_model_sign_match.asc"), overwrite = TRUE)
      
-   } else {
+   } else if (variable == "intpp") {
+     
+     setwd(paste0("~/spatial_analysis/raster_output/NPP"))
+     #list relevant rasters and take out multimodel raster
+     files <- list.files(pattern = "intpp_change", full.names = TRUE)
+     files <- Filter(function(x) !any(grepl("multimodel", x)), files)
+     
+     #list to store up/down rasters
+     list_up_down <- list()
+     
+     #if value is positive, assign 1, if negative, assign -1 to the new raster
+     for(i in 1:length(files)) {
+       
+       model <- raster(files[i])
+       
+       b = (model>0)
+       b[b==TRUE] = 1
+       b[b==FALSE] = -1
+       
+       list_up_down[i] = b
+     }
+     
+     #average the 7 models
+     matrices <- stack(list_up_down)
+     d <- calc(matrices, mean, na.rm = TRUE)
+     plot(d)
+     
+     percent_agreement = abs(d)
+     plot(percent_agreement)
+     
+     #save raster where 100% of models agree on the sign of variable change
+     match_7 = (percent_agreement>=1)
+     match_7[match_7==TRUE] = 1
+     match_7[match_7==FALSE] = 0
+     plot(match_7)
+     
+     #calculate percent of raster where models don't agree
+     p <- prop.table(table(as.vector(match_7)))["1"]*100
+     print(paste0("For variable ",variable," models agree on the sign of change in ",p,"% of the ocean"))
+     
+     writeRaster(match_7, paste0("~/spatial_analysis/raster_output/model_agreement/",variable,"_7_model_sign_match.asc"), overwrite = TRUE)
+     
+     
+     } else {
     
     setwd(paste0("~/spatial_analysis/raster_output/",variable))
     #list relevant rasters and take out multimodel raster

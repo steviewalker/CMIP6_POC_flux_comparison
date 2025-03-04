@@ -8,7 +8,7 @@
 
 calc_ez_depth <- function(model.name, ez.metric) {
   
-  nc.pp <- list.files(paste0("~/spatial_analysis/regridded_nc_files/",model.name,"_rg/"), pattern = "pp")
+  nc.pp <- list.files(paste0("~/spatial_analysis/regridded_nc_files/",model.name,"_rg/"), pattern = "^pp")
   
   #open nc file
   setwd(paste0("~/spatial_analysis/regridded_nc_files/",model.name,"_rg/"))
@@ -179,8 +179,10 @@ calc_ez_depth <- function(model.name, ez.metric) {
     #saving non-averaged arrays for calc_expc_ez
     if(ez.metric == 1) {
       saveRDS(ez_fut, file = paste0(model.name,"_array_ez_depth_lt.Rds"), ascii = TRUE)
-    } else{
+    } else if (ez.metric == 5) {
       saveRDS(ez_fut, file = paste0(model.name,"_array_ez_depth_5_lt.Rds"), ascii = TRUE)
+    } else {
+      saveRDS(ez_fut, file = paste0(model.name,"_array_ez_depth_10_lt.Rds"), ascii = TRUE)
     }
     
   } else {

@@ -388,6 +388,172 @@ ts_DH <- plot_grid(
 
 ggsave(filename = "figS3_absolute_time_series_faceted.jpg", plot = ts_DH, path = "~/master_notebooks/paper_figs/supplemental/", width = 45, height = 45, units = "cm", dpi = 500)
 
+## Fig SX. Intermodel POC flux DH differences ------------
+
+#my custom scale
+color_DH = c("#E78AC3","#66C2A5", "#FFD92F","#FC8D62", "#8DA0CB")
+
+setwd("~/time_series_analysis/files/all_models/")
+dfs <- list.files(pattern = "^normalized_time_series_expc*")
+dfs <- dfs[-3] #remove EZ 10
+DH_labs = c("100m", "1000m", "EZ", "MLDmax", "PCD")
+plot.title = c("CESM2","GFDL-CM4" ,"CMCC-ESM2", "EC-Earth3-CC", "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "UKESM1-0-LL")
+  
+#create empty list for storing for loop output
+time.series <- list()
+
+for(i in 1:length(dfs)) {
+  
+  #read in csv file
+  df <- read_csv(dfs[i])
+  #rename each model with DH info
+  colnames(df) <- c("Year", paste0("CESM_",DH_labs[i]),paste0("CM4_",DH_labs[i]) ,paste0("CMCC_",DH_labs[i]), paste0("EC-Earth_",DH_labs[i]), paste0("GFDL_",DH_labs[i]), paste0("IPSL_",DH_labs[i]), paste0("MPI_",DH_labs[i]), paste0("UKESM_",DH_labs[i]))
+  #store into list
+  time.series[[i]] <- df
+}
+
+#join by year 
+df <- time.series %>% 
+  reduce(left_join, by = "Year")
+
+model = c("CESM","CM4" ,"CMCC", "EC-Earth", "GFDL", "IPSL", "MPI", "UKESM")
+
+DH_list <- list()
+
+for(i in 1:length(model)) {
+  
+  DH_df = df %>% 
+    dplyr::select(Year, paste0(model[i],"_100m"), paste0(model[i],"_EZ"),paste0(model[i],"_PCD"),paste0(model[i],"_MLDmax"),paste0(model[i],"_1000m"))
+  DH_df <- data.table::melt(DH_df,  id.vars = 'Year', value.name = 'POC_flux', variable.name = "DH")
+  
+  #plot time series
+  plot <- ggplot() +
+    geom_line(data = DH_df, aes(x = Year, y = POC_flux, color = DH), size = 1) +
+    geom_smooth(data = DH_df, aes(x = Year, y = POC_flux, color = DH),size = 1.2, se = FALSE)  +
+    theme_bw() +
+    labs(title = plot.title[i], color = "Depth Horizon") +
+    xlab(NULL) +
+    ylab("Change Relative to 1850-1900 (%)") +
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_continuous() +
+    scale_color_manual(labels = c("100 m", "EZ Depth", "PCD", "MLDmax","1000 m"),values = color_DH) +
+    theme(plot.title = element_text(family = "calibri", size = 28),
+          axis.text = element_text(family = "calibri", size = 18),
+          axis.title.y = element_text(family = "calibri", size = 18, margin = margin(r = 10)),
+          legend.key.size = unit(1.5, 'cm'), 
+          legend.key.height = unit(1.3, 'cm'), 
+          legend.key.width = unit(2, 'cm'), 
+          legend.text = element_text(family = "calibri", size = 20),
+          legend.title = element_text(family = "calibri", size = 26),
+          legend.box.spacing = unit(1, 'in'),
+          plot.margin = unit(c(0.3,0.8,0.3,0.3), "cm")) +
+    guides(color = guide_legend(override.aes = list(linewidth = 6)))
+  
+  plot
+  
+  DH_list[[i]] = assign(model[i], plot)
+  
+}
+
+DH_combined <- plot_grid(DH_list[[1]]+theme(legend.position="none"), DH_list[[3]]+theme(legend.position="none"),DH_list[[4]]+theme(legend.position="none"),DH_list[[2]]+theme(legend.position="none"),
+            DH_list[[5]]+theme(legend.position="none"),DH_list[[6]]+theme(legend.position="none"),DH_list[[7]]+theme(legend.position="none"),DH_list[[8]]+theme(legend.position="none"),nrow = 4, ncol = 2)
+          
+
+ggsave(filename = "figS5_intermodel_DH_time_series.jpg", plot = DH_combined, path = "~/master_notebooks/paper_figs/supplemental/", width = 40, height = 50, units = "cm", dpi = 500)
+
+#calculate intermodel range between 100 m, EZ, and PCD change ----------
+DH_ranges <- c()
+
+for(i in 1:length(model)) {
+  
+DH_df = df %>% 
+  dplyr::select(Year, paste0(model[i],"_100m"), paste0(model[i],"_EZ"),paste0(model[i],"_PCD"))
+
+#calculate range of POC flux change
+mean_lt <- dplyr::filter(DH_df, between(Year,2080,2100)) %>% 
+  summarise_if(is.numeric, mean)
+mean_lt <- subset(mean_lt, select = -c(1))
+DH_ranges[i] = max(mean_lt) - min(mean_lt)
+
+}
+
+DH_ranges_MLDmax <- c()
+
+for(i in 1:length(model)) {
+  
+  DH_df = df %>% 
+    dplyr::select(Year, paste0(model[i],"_100m"), paste0(model[i],"_EZ"),paste0(model[i],"_PCD"),paste0(model[i],"_MLDmax"))
+  
+  #calculate range of POC flux change
+  mean_lt <- dplyr::filter(DH_df, between(Year,2080,2100)) %>% 
+    summarise_if(is.numeric, mean)
+  mean_lt <- subset(mean_lt, select = -c(1))
+  DH_ranges_MLDmax[i] = max(mean_lt) - min(mean_lt)
+  
+}
+
+DH_ranges = as_tibble(DH_ranges) %>%
+  cbind(wMLDmax = DH_ranges_MLDmax) %>%
+  cbind(Model = plot.title)
+
+
+write_csv(DH_ranges,"~/time_series_analysis/files/average_change/intermodel_POC_flux_DH_ranges.csv")
+
+for(i in 1:length(dfs)) {
+  
+  
+  normalized.epc100 = read_csv(paste0("~/time_series_analysis/files/all_models/", dfs[i]))
+  colnames(normalized.epc100) <- c("Year", "CESM2","GFDL-CM4" ,"CMCC-ESM2", "EC-Earth3-CC", "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "UKESM1-0-LL")
+  normalized.epc100 <- normalized.epc100 %>%
+    relocate("GFDL-CM4", .before = "GFDL-ESM4")
+  plot.normalized.epc100 <- data.table::melt(normalized.epc100,  id.vars = 'Year', value.name = 'POC_flux_100', variable.name = "Model")
+  
+  #plot time series
+  plot <- ggplot() +
+    geom_line(data = plot.normalized.epc100, aes(x = Year, y = POC_flux_100, color = Model), size = 1.5) +
+    geom_smooth(data = plot.normalized.epc100, aes(x = Year, y = POC_flux_100, color = Model),size = 1.5, se = FALSE) +
+    theme_bw() +
+    labs(title = plot.title[i]) +
+    xlab(NULL) +
+    ylab("POC flux (Pg C/yr)") +
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_continuous(limits = c(4,13.5)) +
+    scale_color_manual(values = color5) +
+    theme(plot.title = element_text(family = "calibri", size = 28),
+          axis.text = element_text(family = "calibri", size = 18),
+          axis.title.y = element_text(family = "calibri", size = 18, margin = margin(r = 10)),
+          legend.key.size = unit(1.5, 'cm'), 
+          legend.key.height = unit(1.3, 'cm'), 
+          legend.key.width = unit(2, 'cm'), 
+          legend.text = element_text(family = "calibri", size = 20),
+          legend.title = element_text(family = "calibri", size = 26),
+          legend.box.spacing = unit(1, 'in'),
+          plot.margin = unit(c(0.3,0.8,0.3,0.3), "cm")) +
+    guides(color = guide_legend(override.aes = list(linewidth = 6)))
+  
+  plot
+  
+  if(i == 2) {
+    plot <- plot + scale_y_continuous()
+  } else if (i == 4) {
+    plot <- plot + labs(title = expression(paste("d)"," MLD"[max],sep="")))
+  } else {}
+  ts_list[[i]] = assign(DH[i], plot)
+  
+}
+
+ts_DH <- plot_grid(
+  plot_grid(ts_list[[1]] + theme(legend.position="none"), ts_list[[3]] + theme(legend.position="none"),
+            ts_list[[5]] + theme(legend.position="none"), ts_list[[4]] + theme(legend.position="none"), nrow = 2, ncol = 2),
+  plot_grid(NULL, ts_list[[2]], NULL, nrow = 1, rel_widths = c(0.32, 1, 0.08)),
+  nrow = 2, rel_heights = c(0.7,0.36))
+
+#ts_DH
+
+ggsave(filename = "figS3_absolute_time_series_faceted.jpg", plot = ts_DH, path = "~/master_notebooks/paper_figs/supplemental/", width = 45, height = 45, units = "cm", dpi = 500)
+
+
+
 
 ## Fig S5. Absolute POC flux Spatial Maps ---------
 
